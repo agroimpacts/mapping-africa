@@ -80,6 +80,9 @@ The land cover map and ancillary data can also be downloaded from the
 An example of how to view the data (using a Jupyter notebook) is
 available [here](https://github.com/agroimpacts/webmapper.git).
 
+## Usage
+Use of these maps is governed by the terms of the [Planet NICFI participant license agreement](https://assets.planet.com/docs/Planet_ParticipantLicenseAgreement_NICFI.pdf)
+
 ## Publications
 
 Estes, L.D., Wussah, A.O. & Asipinu, M.D. (2022a) [Final report - Phase
