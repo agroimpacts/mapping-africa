@@ -1,5 +1,4 @@
-# A region-wide, multi-year set of crop field boundary and landcover
-maps for Africa
+# A region-wide, multi-year set of crop field boundary and landcover maps for Africa
 
 
 ## Background
