@@ -1,24 +1,27 @@
-# A region-wide, multi-year set of crop field boundary and landcover maps for Africa
+# High resolution, annual cropland and landcover maps for African countries
 
 
 ## Background
 
-This site provides links to view and obtain High resolution cropland and
-landcover maps developed by Clark University’s Agricultural Impacts
-Research Group for various African countries
-(https://agroimpacts.info/).
+This site provides links to view and obtain high resolution cropland and
+landcover maps developed by [Clark University](https://clarku.edu)’s
+[Agricultural Impacts Research Group](https://agroimpacts.info/) for
+various African countries using various machine learning approaches.
 
 ## Datasets
 
 There are two types of data currently available:
 
-1.  **cropland**: Field boundary polygon maps developed using different
-    supervised and unsupervised deep learning models span the growth and
-    changes of African agricultural activities since 2018.
+1.  **cropland**: Annual (beginning in year 2018) crop field boundary
+    maps of several African countries, developed using several different
+    modeling approaches applied to Planet imagery (Estes et al, 2022a;
+    Estes et al, 2022b; Wussah et al, 2023). Data are provided as
+    vectorized boundaries, in both pmtile and geoparquet formats. More
+    countries and annual maps are updated as they are created.
 
-2.  **landcover**: Maps generated using Random Forests model trained
-    using the label data and predictors drawn from Sentinel-1,
-    Sentinel-2, and PlanetScope data.
+2.  **landcover**: A 2018 multi-class land cover map for Tanzania
+    developed using U-Net applied to Planet imagery and Sentinel-1 time
+    series derivatives (Song et al, 2023).
 
 ## Accessing data
 
@@ -27,40 +30,46 @@ There are two types of data currently available:
 These datasets can be downloaded from this bucket by AWS account
 holders. Data are stored under the following prefixes:
 
-- croplands
-  - pmtiles
-  - mbtiles
-- landcover/
+    └── mappingafrica/
+        ├── croplands/
+        │   ├── pmtiles
+        │   └── geoparquet
+        └── landcover
 
 These can be viewed using the AWS command line interface (CLI):
 
 ``` bash
-aws s3 ls s3://mappingafrica/ --request-payer
+aws s3 ls s3://mappingafrica/ 
 ```
 
-    PRE croplands/pmtiles/
-    PRE croplands/mbtiles/
-    PRE landcover/
+``` bash
+PRE croplands/pmtiles/
+PRE croplands/mbtiles/
+PRE landcover/
+```
 
-To download a dataset, here’s an example command:
+To download a dataset, please use the following an example command:
 
 ``` bash
 aws s3 cp \
-s3://mappingafrica/landcover/tanzania_2019.tif \
-~/Desktop/ --request-payer
+s3://mappingafrica/landcover/tanzania_2018.tif \
+~/Desktop/ 
 ```
 
-    download: s3://mappingafrica/landcover/tanzania_2019.tif to ../../..
-    /Desktop/tanzania_2019.tif
+``` bash
+download: s3://mappingafrica/landcover/tanzania_2018.tif to ../../..
+/Desktop/tanzania_2018.tif
+```
 
-That will download a map of predicted landcover for Tanzania for the
+That will download a map of predicted land cover for Tanzania for the
 year 2019 to your desktop (you might need to replace ~/ with the full
 path to your home directory).
 
-### From Box
+### From OSF
 
-The data may also be downloaded from a \[public Box folder\]
-(https://airg.box.com/s/s9vhe5zy39e7oljc233n4bc3fxcow5fe).
+The land cover map and ancillary data can also be downloaded from the
+[Open Science Foundation](https://osf.io/4qj36/), and model code is
+[here](https://github.com/LLeiSong/hrlcm).
 
 ## Viewing data
 
@@ -69,22 +78,29 @@ available [here](https://github.com/agroimpacts/webmapper.git).
 
 ## Publications
 
-- [High resolution, annual maps of field boundaries for
-  smallholder-dominated croplands at national
-  scales](https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2021.744863/full),
-  Estes et al.
+Estes, L.D., Wussah, A.O. & Asipinu, M.D. (2022a) [Final report - Phase
+1: Creating open agricultural maps and ground truth data to better
+deliver farm extension
+services](https://cropanalytics.net/wp-content/uploads/2022/04/FarmerlineClark-Report-Feb-2022-002.pdf)
 
-- [A super-ensemble approach to map land cover types with high
-  resolution over data-sparse African savanna
-  landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405),
-  Song et al.
+Estes, L.D., Ye, S., Song, L., Luo, B., Eastman, J.R., Meng, Z., Zhang,
+Q., McRitchie, D., Debats, S.R., Muhando, J., Amukoa, A.H., Kaloo, B.W.,
+Makuru, J., Mbatia, B.K., Muasa, I.M., Mucha, J., Mugami, A.M., Mugami,
+J.M., Muinde, F.W., Mwawaza, F.M., Ochieng, J., Oduol, C.J., Oduor, P.,
+Wanjiku, T., Wanyoike, J.G., Avery, R.B. & Caylor, K.K. (2022b) [High
+resolution, annual maps of field boundaries for smallholder-dominated
+croplands at national
+scales](https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2021.744863/full).
+*Frontiers in Artificial Intelligence*, 4, 744863.
 
-- [Creating open agricultural maps and ground truth data to better
-  deliver farm extension
-  services](https://cropanalytics.net/wp-content/uploads/2022/04/FarmerlineClark-Report-Feb-2022-002.pdf),
-  Este et al.
+Song, L., Estes, A.B. & Estes, L.D. (2023) [A super-ensemble approach to
+map land cover types with high resolution over data-sparse African
+savanna
+landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405).
+*International Journal of Applied Earth Observation and Geoinformation*,
+116, 103152.
 
-- [Creating next generation field boundary and crop type maps rigorous
-  multi-scale groundtruth provides sustainable extension services for
-  smallholders](https://cropanalytics.net/wp-content/uploads/2022/11/Farmerline-Clark-Round-2-Report-V2-Nov-8-2022.pdf),
-  Wussah et al.
+Wussah, A.O., Asipinu, M.D. & Estes, L.D. (2022) [Final report - Phase
+2: creating next generation field boundary and crop type maps rigorous
+multi-scale groundtruth provides sustainable extension services for
+smallholders](https://cropanalytics.net/wp-content/uploads/2022/11/Farmerline-Clark-Round-2-Report-V2-Nov-8-2022.pdf)
