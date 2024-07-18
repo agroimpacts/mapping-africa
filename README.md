@@ -19,7 +19,7 @@ There are two types of data currently available:
 
 2.  **landcover**: Maps generated using Random Forests model trained
     using the label data and predictors drawn from Sentinel-1,
-    Sentinel-2, and PlanetScope data.???
+    Sentinel-2, and PlanetScope data.
 
 ## Accessing data
 
@@ -72,20 +72,20 @@ available [here](https://github.com/agroimpacts/webmapper.git).
 
 - [High resolution, annual maps of field boundaries for
   smallholder-dominated croplands at national
-  scales](https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2021.744863/full)
+  scales](https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2021.744863/full),
   Estes et al.
 
 - [A super-ensemble approach to map land cover types with high
   resolution over data-sparse African savanna
-  landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405)
+  landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405),
   Song et al.
 
 - [Creating open agricultural maps and ground truth data to better
   deliver farm extension
-  services](https://cropanalytics.net/wp-content/uploads/2022/04/FarmerlineClark-Report-Feb-2022-002.pdf)
+  services](https://cropanalytics.net/wp-content/uploads/2022/04/FarmerlineClark-Report-Feb-2022-002.pdf),
   Este et al.
 
 - [Creating next generation field boundary and crop type maps rigorous
   multi-scale groundtruth provides sustainable extension services for
-  smallholders](https://cropanalytics.net/wp-content/uploads/2022/11/Farmerline-Clark-Round-2-Report-V2-Nov-8-2022.pdf)
+  smallholders](https://cropanalytics.net/wp-content/uploads/2022/11/Farmerline-Clark-Round-2-Report-V2-Nov-8-2022.pdf),
   Wussah et al.
