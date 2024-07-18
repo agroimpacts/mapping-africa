@@ -11,7 +11,7 @@ This site provides links to view and obtain high resolution cropland and landcov
 
 There are two types of data currently available:
 
-1.  **cropland**: Annual (beginning in year 2018) crop field boundary maps of several African countries, developed using several different modeling approaches applied to Planet imagery (Estes et al, 2022a; Estes et al, 2022b; Wussah et al, 2023). Data are provided as vectorized boundaries, in both pmtile and geoparquet formats. More countries and annual maps are updated as they are created.
+1.  **cropland**: Annual (beginning in year 2018) crop field boundary maps of several African countries, developed using several different modeling approaches applied to Planet imagery (Estes et al, 2022a; Estes et al, 2022b; Wussah et al, 2023). Data are provided as vectorized boundaries, in both pmtile and geoparquet formats. These datasets are under active development, and more countries and annual maps are updated as they are created.
 
 2.  **landcover**: A 2018 multi-class land cover map for Tanzania developed using U-Net applied to Planet imagery and Sentinel-1 time series derivatives (Song et al, 2023).
 
