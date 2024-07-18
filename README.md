@@ -22,7 +22,10 @@ There are two types of data currently available:
 
 2.  **landcover**: A 2018 multi-class land cover map for Tanzania
     developed using U-Net applied to Planet imagery and Sentinel-1 time
-    series derivatives (Song et al, 2023).
+    series derivatives (Song et al, 2023). See
+    [here](https://lleisong.github.io/website//projects/reconcile_human_elephants/)
+    for more detail on the methods and larger project (led by Dr. Lei
+    Song) for which this map was created.
 
 ## Accessing data
 
