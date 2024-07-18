@@ -6,7 +6,7 @@
 This site provides links to view and obtain high resolution cropland and
 landcover maps developed by [Clark University](https://clarku.edu)’s
 [Agricultural Impacts Research Group](https://agroimpacts.info/) for
-various African countries using various machine learning approaches.
+selected African countries using various machine learning approaches.
 
 ## Datasets
 
