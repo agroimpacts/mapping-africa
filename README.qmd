@@ -5,7 +5,8 @@ format: gfm
 
 ## Background
 
-This site provides links to view and obtain high resolution cropland and landcover maps developed by [Clark University](https://clarku.edu)'s [Agricultural Impacts Research Group](https://agroimpacts.info/) for selected African countries using various machine learning approaches.
+This site provides links to view and obtain high resolution cropland and landcover maps developed by [Clark University](https://clarku.edu)'s [Agricultural Impacts Research Group](https://agroimpacts.info/) for selected African countries using various machine learning approaches applied to Planet 
+imagery.
 
 ## Datasets
 
@@ -13,7 +14,7 @@ There are two types of data currently available:
 
 1.  **cropland**: Annual (beginning in year 2018) crop field boundary maps of several African countries, developed using several different modeling approaches applied to Planet imagery (Estes et al, 2022a; Estes et al, 2022b; Wussah et al, 2023). Data are provided as vectorized boundaries, in both pmtile and geoparquet formats. These datasets are under active development, and more countries and annual maps are updated as they are created.
 
-2.  **landcover**: A 2018 multi-class land cover map for Tanzania developed using U-Net applied to Planet imagery and Sentinel-1 time series derivatives (Song et al, 2023). See [here](https://lleisong.github.io/website//projects/reconcile_human_elephants/) for more detail on the methods and larger project (led by Dr. Lei Song) for which this map was created.
+2.  **land cover**: A 2018 multi-class land cover map for Tanzania developed using U-Net applied to Planet imagery and Sentinel-1 time series derivatives (Song et al, 2023). See [here](https://lleisong.github.io/website//projects/reconcile_human_elephants/) for more detail on the methods and larger project (led by Dr. Lei Song) for which this map was created.
 
 ## Accessing data
 
@@ -75,4 +76,4 @@ Estes, L.D., Ye, S., Song, L., Luo, B., Eastman, J.R., Meng, Z., Zhang, Q., McRi
 
 Song, L., Estes, A.B. & Estes, L.D. (2023) [A super-ensemble approach to map land cover types with high resolution over data-sparse African savanna landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405). *International Journal of Applied Earth Observation and Geoinformation*, 116, 103152.
 
-Wussah, A.O., Asipinu, M.D. & Estes, L.D. (2022) [Final report - Phase 2: creating next generation field boundary and crop type maps rigorous multi-scale groundtruth provides sustainable extension services for smallholders](https://cropanalytics.net/wp-content/uploads/2022/11/Farmerline-Clark-Round-2-Report-V2-Nov-8-2022.pdf)
+Wussah, A.O., Asipinu, M.D. & Estes, L.D. (2022) [Final report - Phase 2: creating next generation field boundary and crop type maps: Rigorous multi-scale groundtruth provides sustainable extension services for smallholders](https://cropanalytics.net/wp-content/uploads/2022/11/Farmerline-Clark-Round-2-Report-V2-Nov-8-2022.pdf)
