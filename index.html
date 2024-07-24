@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Display GeoTIFF and PMTiles with OpenLayers and geotiff.js</title>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+    <script src="https://unpkg.com/geotiff@1.0.0-beta.11/dist/geotiff.bundle.min.js"></script>
+    <script src="https://unpkg.com/ol-pmtiles@0.3.0/dist/olpmtiles.js"></script>
+    <script src="https://cdn.rawgit.com/seikichi/tiff.js/master/tiff.min.js"></script>
+    <style>
+        body, #map {
+            height: 100vh;
+            margin: 0;
+        }
+        .checkboxes {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 20px;
+        }
+        .checkboxes .country {
+            position: relative;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .hidden-checkboxes {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            flex-direction: column;
+            gap: 5px;
+            padding: 5px;
+        }
+        .checkboxes .country:hover .hidden-checkboxes {
+            display: flex;
+        }
+        .hidden-checkboxes .year-label {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        .hidden-checkboxes label {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: #f9f9f9;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .hidden-checkboxes input {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script type="text/javascript">
+        const hybridBaseLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: 'https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=0rXt9evmwC5e2EW3sauy',
+                attributions: '© MapTiler © OpenStreetMap contributors',
+                maxZoom: 20
+            })
+        });
+
+        const pmTilesSources = {
+            Congo: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/congo_2022_v1.pmtiles',
+            Zambia: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2022_v1.pmtiles',
+            Tanzania: 'https://mappingafrica.s3.us-west-2.amazonaws.com/landcover/tanzania_2019_cog.tif',
+            Ghana: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v1.pmtiles'
+        };
+
+        const map = new ol.Map({
+            layers: [hybridBaseLayer],
+            target: 'map',
+            view: new ol.View({
+                center: ol.proj.fromLonLat([27.8493, -13.1339]), // Centering to Zambia
+                zoom: 5
+            })
+        });
+
+        const countryExtents = {
+            Congo: ol.proj.transformExtent([11.093, -5.037, 19.457, 5.399], 'EPSG:4326', 'EPSG:3857'),
+            Zambia: ol.proj.transformExtent([21.999, -18.076, 33.485, -8.224], 'EPSG:4326', 'EPSG:3857'),
+            Tanzania: ol.proj.transformExtent([29.321, -11.741, 40.449, -0.984], 'EPSG:4326', 'EPSG:3857'),
+            Ghana: ol.proj.transformExtent([-3.255, 4.541, 1.202, 11.174], 'EPSG:4326', 'EPSG:3857')
+        };
+
+        let layers = {};
+        let selectedCountries = new Set();
+
+        function updateZoom() {
+            if (selectedCountries.size > 0) {
+                let extent = ol.extent.createEmpty();
+                selectedCountries.forEach(country => {
+                    ol.extent.extend(extent, countryExtents[country]);
+                });
+                map.getView().fit(extent, { duration: 1000 });
+            } else {
+                map.getView().setCenter(ol.proj.fromLonLat([27.8493, -13.1339]));
+                map.getView().setZoom(5);
+            }
+        }
+
+        async function addLayer(country) {
+            const url = pmTilesSources[country];
+            console.log(`Adding layer for ${country} with URL: ${url}`);
+            try {
+                if (url.endsWith('.pmtiles')) {
+                    layers[country] = new ol.layer.VectorTile({
+                        declutter: true,
+                        source: new olpmtiles.PMTilesVectorSource({
+                            url: url
+                        }),
+                        style: new ol.style.Style({
+                            stroke: new ol.style.Stroke({
+                                color: 'lightblue',
+                                width: 1,
+                            }),
+                            fill: new ol.style.Fill({
+                                color: 'rgba(0,0,0,0)',
+                            })
+                        })
+                    });
+                    console.log(`Vector layer for ${country} created.`);
+                } else if (url.endsWith('.tif')) {
+                    const imgextent = countryExtents[country];
+                    layers[country] = new ol.layer.Image({
+                        source: new ol.source.ImageStatic({
+                            url: url,
+                            imageExtent: imgextent,
+                            projection: 'EPSG:3857',
+                            crossOrigin: 'anonymous',
+                            imageLoadFunction: function(image, src) {
+                                var xhr = new XMLHttpRequest();
+                                xhr.responseType = 'arraybuffer';
+                                xhr.open('GET', src);
+                                xhr.onload = function (e) {
+                                    var tiff = new Tiff({buffer: xhr.response});
+                                    var canvas = tiff.toCanvas();
+                                    image.getImage().src = canvas.toDataURL();
+                                };
+                                xhr.send();
+                            }
+                        })
+                    });
+                    console.log(`Raster layer for ${country} created.`);
+                }
+                map.addLayer(layers[country]);
+                console.log(`Layer for ${country} added to map.`);
+                selectedCountries.add(country);
+                updateZoom();
+            } catch (error) {
+                console.error(`Error creating layer for ${country}:`, error);
+            }
+        }
+
+        function removeLayer(country) {
+            if (layers[country]) {
+                map.removeLayer(layers[country]);
+                delete layers[country];
+                selectedCountries.delete(country);
+                updateZoom();
+            }
+        }
+
+        function createCheckbox(id, label, country) {
+            const checkboxLabel = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            checkbox.onchange = (event) => {
+                if (event.target.checked) {
+                    addLayer(country);
+                } else {
+                    removeLayer(country);
+                }
+            };
+            checkboxLabel.appendChild(document.createTextNode(label));
+            checkboxLabel.appendChild(checkbox);
+            return checkboxLabel;
+        }
+
+        function createCountryCheckboxes(country) {
+            const countryDiv = document.createElement('div');
+            countryDiv.className = 'country';
+            countryDiv.appendChild(document.createTextNode(country));
+
+            const hiddenDiv = document.createElement('div');
+            hiddenDiv.className = 'hidden-checkboxes';
+
+            const url = pmTilesSources[country];
+            if (url) {
+                if (url.endsWith('.pmtiles')) {
+                    hiddenDiv.appendChild(createCheckbox(`${country}-vector`, 'Field Boundary', country));
+                }
+                if (url.endsWith('.tif')) {
+                    hiddenDiv.appendChild(createCheckbox(`${country}-raster`, 'Land Cover', country));
+                }
+            }
+
+            if (hiddenDiv.children.length > 0) {
+                countryDiv.appendChild(hiddenDiv);
+                return countryDiv;
+            }
+            return null;
+        }
+
+        const checkboxesContainer = document.createElement('div');
+        checkboxesContainer.className = 'checkboxes';
+
+        ['Congo', 'Zambia', 'Tanzania', 'Ghana'].forEach(country => {
+            const countryCheckboxes = createCountryCheckboxes(country);
+            if (countryCheckboxes) {
+                checkboxesContainer.appendChild(countryCheckboxes);
+            }
+        });
+
+        document.getElementById('map').appendChild(checkboxesContainer);
+
+        // Optionally, initialize the map with certain layers checked
+        document.getElementById('Congo-vector').checked = true;
+        addLayer('Congo');
+    </script>
+</body>
+</html>
