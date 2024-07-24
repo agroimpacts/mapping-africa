@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Display GeoTIFF and PMTiles with OpenLayers and geotiff.js</title>
+    <title>African cropland and landcover Openlayer Web Map</title>
     <meta charset="utf-8" />
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
@@ -85,15 +85,6 @@
             Ghana: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v1.pmtiles'
         };
 
-        const map = new ol.Map({
-            layers: [hybridBaseLayer],
-            target: 'map',
-            view: new ol.View({
-                center: ol.proj.fromLonLat([27.8493, -13.1339]), // Centering to Zambia
-                zoom: 5
-            })
-        });
-
         const countryExtents = {
             Congo: ol.proj.transformExtent([11.093, -5.037, 19.457, 5.399], 'EPSG:4326', 'EPSG:3857'),
             Zambia: ol.proj.transformExtent([21.999, -18.076, 33.485, -8.224], 'EPSG:4326', 'EPSG:3857'),
@@ -101,21 +92,25 @@
             Ghana: ol.proj.transformExtent([-3.255, 4.541, 1.202, 11.174], 'EPSG:4326', 'EPSG:3857')
         };
 
+        let initialExtent = ol.extent.createEmpty();
+        Object.values(countryExtents).forEach(extent => {
+            ol.extent.extend(initialExtent, extent);
+        });
+
+        const map = new ol.Map({
+            layers: [hybridBaseLayer],
+            target: 'map',
+            view: new ol.View({
+                center: ol.extent.getCenter(initialExtent), // Center the view on the combined extent
+                zoom: 3
+            })
+        });
+
+        // Fit the view to the extent of all countries
+        map.getView().fit(initialExtent, { duration: 1000 });
+
         let layers = {};
         let selectedCountries = new Set();
-
-        function updateZoom() {
-            if (selectedCountries.size > 0) {
-                let extent = ol.extent.createEmpty();
-                selectedCountries.forEach(country => {
-                    ol.extent.extend(extent, countryExtents[country]);
-                });
-                map.getView().fit(extent, { duration: 1000 });
-            } else {
-                map.getView().setCenter(ol.proj.fromLonLat([27.8493, -13.1339]));
-                map.getView().setZoom(5);
-            }
-        }
 
         async function addLayer(country) {
             const url = pmTilesSources[country];
@@ -233,9 +228,18 @@
 
         document.getElementById('map').appendChild(checkboxesContainer);
 
-        // Optionally, initialize the map with certain layers checked
-        document.getElementById('Congo-vector').checked = true;
-        addLayer('Congo');
+        // Initialize the map with all layers checked
+        ['Congo', 'Zambia', 'Tanzania', 'Ghana'].forEach(country => {
+            if (document.getElementById(`${country}-vector`)) {
+                document.getElementById(`${country}-vector`).checked = true;
+                addLayer(country);
+            }
+            if (document.getElementById(`${country}-raster`)) {
+                document.getElementById(`${country}-raster`).checked = true;
+                addLayer(country);
+            }
+        });
+
     </script>
 </body>
 </html>
