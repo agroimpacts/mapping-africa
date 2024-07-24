@@ -112,6 +112,19 @@
         let layers = {};
         let selectedCountries = new Set();
 
+        function updateZoom() {
+            if (selectedCountries.size > 0) {
+                let extent = ol.extent.createEmpty();
+                selectedCountries.forEach(country => {
+                    ol.extent.extend(extent, countryExtents[country]);
+                });
+                map.getView().fit(extent, { duration: 1000 });
+            } else {
+                map.getView().setCenter(ol.extent.getCenter(initialExtent));
+                map.getView().setZoom(3);
+            }
+        }
+
         async function addLayer(country) {
             const url = pmTilesSources[country];
             console.log(`Adding layer for ${country} with URL: ${url}`);
@@ -135,23 +148,15 @@
                     console.log(`Vector layer for ${country} created.`);
                 } else if (url.endsWith('.tif')) {
                     const imgextent = countryExtents[country];
-                    layers[country] = new ol.layer.Image({
-                        source: new ol.source.ImageStatic({
+                    layers[country] = new ol.layer.Tile({
+                        source: new ol.source.TileImage({
                             url: url,
-                            imageExtent: imgextent,
-                            projection: 'EPSG:3857',
-                            crossOrigin: 'anonymous',
-                            imageLoadFunction: function(image, src) {
-                                var xhr = new XMLHttpRequest();
-                                xhr.responseType = 'arraybuffer';
-                                xhr.open('GET', src);
-                                xhr.onload = function (e) {
-                                    var tiff = new Tiff({buffer: xhr.response});
-                                    var canvas = tiff.toCanvas();
-                                    image.getImage().src = canvas.toDataURL();
-                                };
-                                xhr.send();
-                            }
+                            tileGrid: ol.tilegrid.createXYZ({
+                                extent: imgextent,
+                                tileSize: 512,
+                                maxZoom: 18
+                            }),
+                            projection: 'EPSG:3857'
                         })
                     });
                     console.log(`Raster layer for ${country} created.`);
