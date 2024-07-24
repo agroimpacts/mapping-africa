@@ -1,4 +1,5 @@
-# High resolution, annual cropland and landcover maps for African countries
+# High resolution, annual cropland and landcover maps for African
+countries
 
 
 ## Background
@@ -6,7 +7,8 @@
 This site provides links to view and obtain high resolution cropland and
 landcover maps developed by [Clark University](https://clarku.edu)’s
 [Agricultural Impacts Research Group](https://agroimpacts.info/) for
-selected African countries using various machine learning approaches.
+selected African countries using various machine learning approaches
+applied to Planet imagery.
 
 ## Datasets
 
@@ -20,7 +22,7 @@ There are two types of data currently available:
     datasets are under active development, and more countries and annual
     maps are updated as they are created.
 
-2.  **landcover**: A 2018 multi-class land cover map for Tanzania
+2.  **land cover**: A 2018 multi-class land cover map for Tanzania
     developed using U-Net applied to Planet imagery and Sentinel-1 time
     series derivatives (Song et al, 2023). See
     [here](https://lleisong.github.io/website//projects/reconcile_human_elephants/)
@@ -78,10 +80,14 @@ The land cover map and ancillary data can also be downloaded from the
 ## Viewing data
 
 An example of how to view the data (using a Jupyter notebook) is
-available [here](https://github.com/agroimpacts/webmapper.git).
+available
+[here](https://agroimpacts.github.io/mapping-africa/index.html?lat=40.7128&lon=-74.0060&zoom=12).
 
 ## Usage
-Use of these maps is governed by the terms of the [Planet NICFI participant license agreement](https://assets.planet.com/docs/Planet_ParticipantLicenseAgreement_NICFI.pdf)
+
+Use of these maps is governed by the terms of the [Planet NICFI
+participant license
+agreement](https://assets.planet.com/docs/Planet_ParticipantLicenseAgreement_NICFI.pdf)
 
 ## Publications
 
@@ -108,6 +114,6 @@ landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405)
 116, 103152.
 
 Wussah, A.O., Asipinu, M.D. & Estes, L.D. (2022) [Final report - Phase
-2: creating next generation field boundary and crop type maps rigorous
+2: creating next generation field boundary and crop type maps: Rigorous
 multi-scale groundtruth provides sustainable extension services for
 smallholders](https://cropanalytics.net/wp-content/uploads/2022/11/Farmerline-Clark-Round-2-Report-V2-Nov-8-2022.pdf)

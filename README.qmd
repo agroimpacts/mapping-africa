@@ -63,7 +63,8 @@ The land cover map and ancillary data can also be downloaded from the [Open Scie
 
 ## Viewing data
 
-An example of how to view the data (using a Jupyter notebook) is available [here](https://github.com/agroimpacts/webmapper.git).
+An example of how to view the data (using a Jupyter notebook) is available [here](https://agroimpacts.github.io/mapping-africa/index.html?lat=40.7128&lon=-74.0060&zoom=12
+).
 
 ## Usage
 Use of these maps is governed by the terms of the [Planet NICFI participant license agreement](https://assets.planet.com/docs/Planet_ParticipantLicenseAgreement_NICFI.pdf)
