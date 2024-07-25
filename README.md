@@ -79,9 +79,13 @@ The land cover map and ancillary data can also be downloaded from the
 
 ## Viewing data
 
-An example of how to view the data (using a Jupyter notebook) is
-available
-[here](https://agroimpacts.github.io/mapping-africa/index.html?lat=40.7128&lon=-74.0060&zoom=12).
+The datasets can be viewed through the [web
+map](https://agroimpacts.github.io/mapping-africa/) hosted here (and
+accessible from [here](https://mappingafrica.io)).
+
+Maps can also be loaded and displayed using a Jupyter notebook (see the
+example
+[here](https://github.com/agroimpacts/mapping-africa/blob/main/notebooks/map_viewer.ipynb).
 
 ## Usage
 
