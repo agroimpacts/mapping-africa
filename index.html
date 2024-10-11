@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <title>African cropland and landcover Openlayer Web Map</title>
@@ -91,7 +91,18 @@
 
         const pmTilesSources = {
             Congo: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/congo_2022_v1.pmtiles',
-            Zambia: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2022_v1.pmtiles',
+            Zambia: {
+                'version1': {
+                    '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2022_v1.pmtiles',
+                },
+                'version2': {
+                    '2019': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_v2_2019.pmtiles',
+                    '2020': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2020_v2.pmtiles',
+                    '2021': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2021_v2.pmtiles',
+                    '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2022_v2.pmtiles',
+                    '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2023_v2.pmtiles'
+                }
+            },
             Ghana: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v1.pmtiles'
         };
 
@@ -140,76 +151,74 @@
             }
         }
 
-        async function addLayer(country, layerType) {
-            const sourceUrl = layerType === 'pmtiles' ? pmTilesSources[country] : tiffSources[country];
-            console.log(`Adding ${layerType} layer for ${country} with URL: ${sourceUrl}`);
-            try {
-                if (layerType === 'pmtiles') {
-                    layers[`${country}-${layerType}`] = new ol.layer.VectorTile({
-                        declutter: true,
-                        source: new olpmtiles.PMTilesVectorSource({
-                            url: sourceUrl
-                        }),
-                        style: new ol.style.Style({
-                            stroke: new ol.style.Stroke({
-                                color: 'lightblue',
-                                width: 1,
+        async function addLayer(country, layerType, version = null, year = null) {
+            const sourceUrl = year ? pmTilesSources[country][version][year] : pmTilesSources[country];
+            const layerKey = year ? `${country}-${layerType}-${version}-${year}` : `${country}-${layerType}`;
+
+            if (!layers[layerKey]) {
+                try {
+                    if (layerType === 'pmtiles') {
+                        layers[layerKey] = new ol.layer.VectorTile({
+                            declutter: true,
+                            source: new olpmtiles.PMTilesVectorSource({
+                                url: sourceUrl
                             }),
-                            fill: new ol.style.Fill({
-                                color: 'rgba(0,0,0,0)',
+                            style: new ol.style.Style({
+                                stroke: new ol.style.Stroke({
+                                    color: 'lightblue',
+                                    width: 1,
+                                }),
+                                fill: new ol.style.Fill({
+                                    color: 'rgba(0,0,0,0)',
+                                })
                             })
-                        })
-                    });
-                } else {
-                    layers[`${country}-${layerType}`] = new ol.layer.Tile({
-                        source: new ol.source.GeoTIFF({
-                            sources: [{
-                                url: sourceUrl,
-                                nodata: 0,
-                                crossOrigin: 'anonymous' // Ensuring CORS headers are set
-                            }],
-                        }),
-                    });
-                }
-                console.log(`${layerType} layer for ${country} created.`);
-                map.addLayer(layers[`${country}-${layerType}`]);
-                console.log(`${layerType} layer for ${country} added to map.`);
-                selectedCountries.add(country);
-                if (!countryLayers[country]) {
-                    countryLayers[country] = new Set();
-                }
-                countryLayers[country].add(layerType);
-                updateZoom();
-            } catch (error) {
-                console.error(`Error creating ${layerType} layer for ${country}:`, error);
-            }
-        }
-
-        function removeLayer(country, layerType) {
-            if (layers[`${country}-${layerType}`]) {
-                map.removeLayer(layers[`${country}-${layerType}`]);
-                delete layers[`${country}-${layerType}`];
-                if (countryLayers[country]) {
-                    countryLayers[country].delete(layerType);
-                    if (countryLayers[country].size === 0) {
-                        selectedCountries.delete(country);
+                        });
+                    } else {
+                        layers[layerKey] = new ol.layer.Tile({
+                            source: new ol.source.GeoTIFF({
+                                sources: [{
+                                    url: sourceUrl,
+                                    nodata: 0,
+                                    crossOrigin: 'anonymous' // Ensuring CORS headers are set
+                                }],
+                            }),
+                        });
                     }
+                    console.log(`${layerType} layer for ${country} created.`);
+                    map.addLayer(layers[layerKey]);
+                    selectedCountries.add(country);
+                    updateZoom();
+                } catch (error) {
+                    console.error(`Error creating ${layerType} layer for ${country}:`, error);
+                }
+            }
+        }
+
+        function removeLayer(country, layerType, version = null, year = null) {
+            const layerKey = year ? `${country}-${layerType}-${version}-${year}` : `${country}-${layerType}`;
+
+            if (layers[layerKey]) {
+                map.removeLayer(layers[layerKey]);
+                delete layers[layerKey];
+                console.log(`${layerType} layer for ${country} removed.`);
+                if (!Object.keys(layers).some(key => key.startsWith(country))) {
+                    selectedCountries.delete(country);
                 }
                 updateZoom();
             }
         }
 
-        function createCheckbox(id, label, country, layerType) {
+        function createCheckbox(id, label, country, layerType, version = null, year = null, checked = true) {
             const checkboxLabel = document.createElement('label');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = id;
-            checkbox.checked = true; // Initialize checkbox as checked
+            checkbox.checked = checked; // Set initial checked state
             checkbox.onchange = (event) => {
                 if (event.target.checked) {
-                    addLayer(country, layerType);
+                    addLayer(country, layerType, version, year);
                 } else {
-                    removeLayer(country, layerType);
+                    removeLayer(country, layerType, version, year);
                 }
             };
             checkboxLabel.appendChild(document.createTextNode(label));
@@ -226,10 +235,22 @@
             hiddenDiv.className = 'hidden-checkboxes';
 
             if (pmTilesSources[country]) {
-                hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles`, 'Field Boundary', country, 'pmtiles'));
+                if (typeof pmTilesSources[country] === 'object') {
+                    Object.keys(pmTilesSources[country]).forEach(version => {
+                        const versionHeader = document.createElement('div');
+                        versionHeader.appendChild(document.createTextNode(`Version ${version.replace('version', '')}`));
+                        hiddenDiv.appendChild(versionHeader);
+
+                        Object.keys(pmTilesSources[country][version]).forEach(year => {
+                            hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles-${version}-${year}`, `${year}`, country, 'pmtiles', version, year, false));
+                        });
+                    });
+                } else {
+                    hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles`, 'Field Boundary', country, 'pmtiles', null, null, false));
+                }
             }
             if (tiffSources[country]) {
-                hiddenDiv.appendChild(createCheckbox(`${country}-tiff`, 'Land Cover', country, 'tiff'));
+                hiddenDiv.appendChild(createCheckbox(`${country}-tiff`, 'Land Cover', country, 'tiff', null, null, false));
             }
 
             if (hiddenDiv.children.length > 0) {
@@ -251,8 +272,8 @@
 
         document.getElementById('map').appendChild(checkboxesContainer);
 
-        // initializing map with checking all layers
-        ['Congo', 'Zambia', 'Tanzania', 'Ghana'].forEach(country => {
+        // initializing map with checking only version 1 of Zambia and the other countries' maps
+        ['Congo', 'Tanzania', 'Ghana'].forEach(country => {
             if (pmTilesSources[country]) {
                 addLayer(country, 'pmtiles');
             }
@@ -260,6 +281,13 @@
                 addLayer(country, 'tiff');
             }
         });
+
+        // Load only version 1 of Zambia
+        if (pmTilesSources.Zambia && pmTilesSources.Zambia['version1']) {
+            Object.keys(pmTilesSources.Zambia['version1']).forEach(year => {
+                addLayer('Zambia', 'pmtiles', 'version1', year);
+            });
+        }
 
     </script>
 </body>
