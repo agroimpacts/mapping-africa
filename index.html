@@ -1,18 +1,14 @@
 <!DOCTYPE html> 
 <html lang="en">
 <head>
-    <title>African cropland and landcover Openlayer Web Map</title>
+    <title>African Cropland and Landcover Openlayer Web Map</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
-    <script src="https://unpkg.com/geotiff@2.1.3/dist/geotiff.bundle.js"></script>
     <script src="https://unpkg.com/ol-pmtiles@0.3.0/dist/olpmtiles.js"></script>
-    <script src="https://cdn.rawgit.com/seikichi/tiff.js/master/tiff.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ol-ext@4.0.11/dist/ol-ext.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol-ext@4.0.11/dist/ol-ext.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/geotiff"></script>
-    <script>console.log(GeoTIFF);</script>
     
     <style>
         body, #map {
@@ -69,13 +65,12 @@
         }
         
         img, video, canvas {
-            overflow: hidden !important; /* to ensure overflow is not set to visible */
-            display: block;   /* to ensures that the elements behave more predictably in terms of spacing */
-            max-width: 100%;  /* to ensure the elements do not overflow the parent container */
-            max-height: 100%; /* to ensure the elements do not overflow the parent container */
-            box-sizing: border-box; /* to include padding and border in the element's total width and height */
+            overflow: hidden !important;
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            box-sizing: border-box;
         }
-        
     </style>
 </head>
 <body>
@@ -106,15 +101,9 @@
             Ghana: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v1.pmtiles'
         };
 
-        const tiffSources = {
-            Tanzania: 'https://mappingafrica.s3.us-west-2.amazonaws.com/landcover/tanzania_2019_cog.tif',
-            Ghana: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/cogs/crop_fractions_ghana_2018-2023.tif'
-        };
-
         const countryExtents = {
             Congo: ol.proj.transformExtent([11.093, -5.037, 19.457, 5.399], 'EPSG:4326', 'EPSG:3857'),
             Zambia: ol.proj.transformExtent([21.999, -18.076, 33.485, -8.224], 'EPSG:4326', 'EPSG:3857'),
-            Tanzania: ol.proj.transformExtent([29.321, -11.741, 40.449, -0.984], 'EPSG:4326', 'EPSG:3857'),
             Ghana: ol.proj.transformExtent([-3.255, 4.541, 1.202, 11.174], 'EPSG:4326', 'EPSG:3857')
         };
 
@@ -135,21 +124,7 @@
         map.getView().fit(initialExtent, { duration: 1000 });
 
         let layers = {};
-        let selectedCountries = new Set();
-        let countryLayers = {};
-
-        function updateZoom() {
-            if (selectedCountries.size > 0) {
-                let extent = ol.extent.createEmpty();
-                selectedCountries.forEach(country => {
-                    ol.extent.extend(extent, countryExtents[country]);
-                });
-                map.getView().fit(extent, { duration: 1000 });
-            } else {
-                map.getView().setCenter(ol.extent.getCenter(initialExtent));
-                map.getView().setZoom(3);
-            }
-        }
+        let selectedCountries = new Set(['Congo', 'Zambia', 'Ghana']);
 
         async function addLayer(country, layerType, version = null, year = null) {
             const sourceUrl = year ? pmTilesSources[country][version][year] : pmTilesSources[country];
@@ -157,37 +132,23 @@
 
             if (!layers[layerKey]) {
                 try {
-                    if (layerType === 'pmtiles') {
-                        layers[layerKey] = new ol.layer.VectorTile({
-                            declutter: true,
-                            source: new olpmtiles.PMTilesVectorSource({
-                                url: sourceUrl
+                    layers[layerKey] = new ol.layer.VectorTile({
+                        declutter: true,
+                        source: new olpmtiles.PMTilesVectorSource({
+                            url: sourceUrl
+                        }),
+                        style: new ol.style.Style({
+                            stroke: new ol.style.Stroke({
+                                color: 'lightblue',
+                                width: 1,
                             }),
-                            style: new ol.style.Style({
-                                stroke: new ol.style.Stroke({
-                                    color: 'lightblue',
-                                    width: 1,
-                                }),
-                                fill: new ol.style.Fill({
-                                    color: 'rgba(0,0,0,0)',
-                                })
+                            fill: new ol.style.Fill({
+                                color: 'rgba(0,0,0,0)',
                             })
-                        });
-                    } else {
-                        layers[layerKey] = new ol.layer.Tile({
-                            source: new ol.source.GeoTIFF({
-                                sources: [{
-                                    url: sourceUrl,
-                                    nodata: 0,
-                                    crossOrigin: 'anonymous' // Ensuring CORS headers are set
-                                }],
-                            }),
-                        });
-                    }
-                    console.log(`${layerType} layer for ${country} created.`);
+                        })
+                    });
                     map.addLayer(layers[layerKey]);
-                    selectedCountries.add(country);
-                    updateZoom();
+                    console.log(`${layerType} layer for ${country} created.`);
                 } catch (error) {
                     console.error(`Error creating ${layerType} layer for ${country}:`, error);
                 }
@@ -201,10 +162,6 @@
                 map.removeLayer(layers[layerKey]);
                 delete layers[layerKey];
                 console.log(`${layerType} layer for ${country} removed.`);
-                if (!Object.keys(layers).some(key => key.startsWith(country))) {
-                    selectedCountries.delete(country);
-                }
-                updateZoom();
             }
         }
 
@@ -242,15 +199,14 @@
                         hiddenDiv.appendChild(versionHeader);
 
                         Object.keys(pmTilesSources[country][version]).forEach(year => {
-                            hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles-${version}-${year}`, `${year}`, country, 'pmtiles', version, year, false));
+                            const isChecked = version === 'version1'; // Check only version 1 layers
+                            hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles-${version}-${year}`, `${year}`, country, 'pmtiles', version, year, isChecked));
                         });
                     });
                 } else {
-                    hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles`, 'Field Boundary', country, 'pmtiles', null, null, false));
+                    const isChecked = country !== 'Zambia'; // Check only version 1 layers for non-Zambia countries
+                    hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles`, 'Field Boundary', country, 'pmtiles', null, null, isChecked));
                 }
-            }
-            if (tiffSources[country]) {
-                hiddenDiv.appendChild(createCheckbox(`${country}-tiff`, 'Land Cover', country, 'tiff', null, null, false));
             }
 
             if (hiddenDiv.children.length > 0) {
@@ -263,7 +219,7 @@
         const checkboxesContainer = document.createElement('div');
         checkboxesContainer.className = 'checkboxes';
 
-        ['Congo', 'Zambia', 'Tanzania', 'Ghana'].forEach(country => {
+        ['Congo', 'Zambia', 'Ghana'].forEach(country => {
             const countryCheckboxes = createCountryCheckboxes(country);
             if (countryCheckboxes) {
                 checkboxesContainer.appendChild(countryCheckboxes);
@@ -272,23 +228,18 @@
 
         document.getElementById('map').appendChild(checkboxesContainer);
 
-        // initializing map with checking only version 1 of Zambia and the other countries' maps
-        ['Congo', 'Tanzania', 'Ghana'].forEach(country => {
+        // Initialize the map with all version 1 layers displayed and fit to the full extent
+        ['Congo', 'Ghana'].forEach(country => {
             if (pmTilesSources[country]) {
                 addLayer(country, 'pmtiles');
             }
-            if (tiffSources[country]) {
-                addLayer(country, 'tiff');
-            }
         });
 
-        // Load only version 1 of Zambia
         if (pmTilesSources.Zambia && pmTilesSources.Zambia['version1']) {
             Object.keys(pmTilesSources.Zambia['version1']).forEach(year => {
                 addLayer('Zambia', 'pmtiles', 'version1', year);
             });
         }
-
     </script>
 </body>
 </html>
