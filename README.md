@@ -1,5 +1,4 @@
-# High resolution, annual cropland and landcover maps for African
-countries
+# High resolution, annual cropland and landcover maps for African countries
 
 
 ## Background
