@@ -1,0 +1,259 @@
+body, #map {
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+:root {
+  --header-h: 3rem; 
+}
+
+/* Header*/
+  #header {
+  position: fixed;
+  color: #fff;
+  background-color: #182231;
+  font-family: Copperplate, Roboto, Helvetica, Arial, serif;
+  padding:8px 12px;
+  display: flex;
+  align-items: center;  /* vertical centering */
+  width: 100%;
+  margin: 0;
+  height: 3rem;
+  justify-content: space-between;  /* keep right-header at right edge */
+  gap: 0.75rem;
+  z-index: 1000;   /* keep above map */
+  box-sizing: border-box;
+}
+
+  #left-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;         /* helps text ellipsis when space is small */
+  }
+
+  /* logo */
+  #logo {
+    height: 2.1rem;                
+    width: auto;
+    display: block;
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  #git-logo {
+    height: 1.5rem;                
+    width: auto;
+    display: block;
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  #header #right-header .button {
+  background: transparent;
+  color: #fff;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 0;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+  /* hover effect*/
+    #header #right-header .button:hover {
+      background: #6809c1;
+      border-radius: 6px;
+    }
+
+  #right-header #toolbar {
+  display: flex;
+  gap: 0;              
+}
+
+  #header-text {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1;
+    white-space: nowrap;            /* keep in one line */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: inherit;
+    min-width: 0;                   /* enables ellipsis in flex containers */
+  }
+
+  #right-header a, .dropdown .dropbtn {
+  font-size: 16px; color: white; padding: 10px 14px; border: 0; background: transparent;
+  }
+
+  #right-header a{
+    font-size: 16px;
+    color: white;
+    padding: 10px 14px;
+    border: 0;
+    background: transparent;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  #right-header a:hover {
+    background: #6809c1;
+    border-radius: 6px;
+  }
+
+  #right-header .toolbar-btn {
+  all: unset;         
+  display: inline-block;
+  padding: 10px 14px;
+  font-size: 16px;
+  line-height: 1;
+  color: #94BF8C ;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+#right-header .toolbar-btn:hover {
+  background: #6809c1;
+  color: #FFF ;
+  border-radius: 6px;
+}
+
+/* keyboard focus ring for accessibility */
+#right-header .toolbar-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+
+.checkboxes {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 20px;
+}
+
+.checkboxes .country {
+  position: relative;
+  background-color: white;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.hidden-checkboxes {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px;
+}
+
+.checkboxes .country:hover .hidden-checkboxes {
+  display: flex;
+}
+
+.hidden-checkboxes label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: #f9f9f9;
+  padding: 5px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.hidden-checkboxes input {
+  margin-top: 5px;
+}
+
+img, video, canvas {
+  overflow: hidden !important;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Layout */
+#app {
+  position: absolute;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+#map { position: absolute; inset: 0; }
+
+/* Toolbar */
+#toolbar { display: flex; gap: 8px; }
+
+/* Buttons */
+.toolbar-btn {
+  padding: 12px 20px;
+  min-height: 44px;                    
+  min-width: 120px;                    
+  border-radius: 12px;
+  border: 1px solid #5a02a9;           
+  background: rgba(104, 9, 193, 0.8);   
+  color: #fff;                           
+  cursor: pointer;
+  font: 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  user-select: none;
+}
+
+.toolbar-btn:hover,
+.toolbar-btn:focus-visible {
+  background: #6EB7B8;                   /* hover/focus color */
+  border-color: #56a5a6;                 
+}
+
+.toolbar-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+
+/* disabled style */
+.toolbar-btn[disabled] {
+  opacity: .6;
+  cursor: not-allowed;
+  filter: grayscale(20%);
+}
+
+/* Panels */
+.toolbar-panel {
+  position: absolute;
+  top: 46px; right: 10px;   /* under the toolbar */
+  background: rgba(255,255,255,.5);
+  backdrop-filter: blur(3px);
+  /* border-radius: 12px; */
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  padding: 10px 12px;
+  min-width: 260px;
+  z-index: 9;
+  display: none;
+}
+
+.maplibregl-ctrl-bottom-right {
+  bottom: 40px; /* or calc(var(--header-h) + 8px) if needed */
+}
+
+.panel-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.panel-row label { cursor: pointer; }
+.panel-hint { color: #666; font-size: 12px; margin-top: 6px; }
