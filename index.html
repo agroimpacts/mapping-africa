@@ -1,255 +1,30 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>African Cropland and Landcover Openlayer Web Map</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
-    <script src="https://unpkg.com/ol-pmtiles@0.3.0/dist/olpmtiles.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ol-ext@4.0.11/dist/ol-ext.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol-ext@4.0.11/dist/ol-ext.min.css">
-    
-    <style>
-        body, #map {
-            height: 100vh;
-            margin: 0;
-        }
-        
-        .checkboxes {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: row-reverse;
-            gap: 20px;
-        }
-        .checkboxes .country {
-            position: relative;
-            background-color: white;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .hidden-checkboxes {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: white;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            flex-direction: column;
-            gap: 5px;
-            padding: 5px;
-        }
-        .checkboxes .country:hover .hidden-checkboxes {
-            display: flex;
-        }
-        .hidden-checkboxes label {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            background-color: #f9f9f9;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .hidden-checkboxes input {
-            margin-top: 5px;
-        }
-        
-        img, video, canvas {
-            overflow: hidden !important;
-            display: block;
-            max-width: 100%;
-            max-height: 100%;
-            box-sizing: border-box;
-        }
-    </style>
+  <title>African Cropland and Web Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel='stylesheet' href='https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.css' />
+  <script src='https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.js'></script>
+  <script src="https://unpkg.com/pmtiles@3.2.0/dist/pmtiles.js"></script>
+  <script src="https://unpkg.com/@geomatico/maplibre-cog-protocol/dist/index.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="header">
+     <div id="left-header">
+         <a href="https://mappingafrica.io"><img id="logo" src="data/mapping-africa-icon.png" alt="logo" /></a>
+        <div id="header-text"><b>African Cropland Web Map</b></div>
+        <a href="https://github.com/agroimpacts/mapping-africa"><img id="git-logo" src="data/github-icon-white-5.jpg" alt="github" /></a>
+     </div>
+    <div id="right-header">
+      <div id="toolbar"></div>
+    </div>
+  </div>
+  <div id="app">
     <div id="map"></div>
-    <script type="text/javascript">
-        const hybridBaseLayer = new ol.layer.Tile({
-            source: new ol.source.XYZ({
-                url: 'https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=0rXt9evmwC5e2EW3sauy',
-                attributions: '© MapTiler © OpenStreetMap contributors',
-                maxZoom: 20
-            })
-        });
-
-        const pmTilesSources = {
-            Congo: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/congo_2022_v1.pmtiles',
-            Zambia: {
-                'version1': {
-                    '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2022_v1.pmtiles',
-
-                },
-                'version2': {
-                    '2019': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_v2_2019.pmtiles',
-                    '2020': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2020_v2.pmtiles',
-                    '2021': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2021_v2.pmtiles',
-                    '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2022_v2.pmtiles',
-                    '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2023_v2.pmtiles'
-                }
-                ,
-                'version3': {
-                    '2018': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2018_v3.pmtiles',
-                    '2019': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2019_v3.pmtiles',
-                    '2020': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2020_v3.pmtiles',
-                    '2021': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2021_v3.pmtiles',
-                    '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2022_v3.pmtiles',
-                    '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2023_v3.pmtiles'
-                }
-            },
-            Ghana: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v1.pmtiles'
-        };
-
-        const countryExtents = {
-            Congo: ol.proj.transformExtent([11.093, -5.037, 19.457, 5.399], 'EPSG:4326', 'EPSG:3857'),
-            Zambia: ol.proj.transformExtent([21.999, -18.076, 33.485, -8.224], 'EPSG:4326', 'EPSG:3857'),
-            Ghana: ol.proj.transformExtent([-3.255, 4.541, 1.202, 11.174], 'EPSG:4326', 'EPSG:3857')
-        };
-
-        let initialExtent = ol.extent.createEmpty();
-        Object.values(countryExtents).forEach(extent => {
-            ol.extent.extend(initialExtent, extent);
-        });
-
-        const map = new ol.Map({
-            layers: [hybridBaseLayer],
-            target: 'map',
-            view: new ol.View({
-                center: ol.extent.getCenter(initialExtent),
-                zoom: 5
-            })
-        });
-
-        map.getView().fit(initialExtent, { duration: 1000 });
-
-        let layers = {};
-        let selectedCountries = new Set(['Congo', 'Zambia', 'Ghana']);
-
-        async function addLayer(country, layerType, version = null, year = null) {
-            const sourceUrl = year ? pmTilesSources[country][version][year] : pmTilesSources[country];
-            const layerKey = year ? `${country}-${layerType}-${version}-${year}` : `${country}-${layerType}`;
-
-            if (!layers[layerKey]) {
-                try {
-                    layers[layerKey] = new ol.layer.VectorTile({
-                        declutter: true,
-                        source: new olpmtiles.PMTilesVectorSource({
-                            url: sourceUrl
-                        }),
-                        style: new ol.style.Style({
-                            stroke: new ol.style.Stroke({
-                                color: 'lightblue',
-                                width: 1,
-                            }),
-                            fill: new ol.style.Fill({
-                                color: 'rgba(0,0,0,0)',
-                            })
-                        })
-                    });
-                    map.addLayer(layers[layerKey]);
-                    console.log(`${layerType} layer for ${country} created.`);
-                } catch (error) {
-                    console.error(`Error creating ${layerType} layer for ${country}:`, error);
-                }
-            }
-        }
-
-        function removeLayer(country, layerType, version = null, year = null) {
-            const layerKey = year ? `${country}-${layerType}-${version}-${year}` : `${country}-${layerType}`;
-
-            if (layers[layerKey]) {
-                map.removeLayer(layers[layerKey]);
-                delete layers[layerKey];
-                console.log(`${layerType} layer for ${country} removed.`);
-            }
-        }
-
-        function createCheckbox(id, label, country, layerType, version = null, year = null, checked = true) {
-            const checkboxLabel = document.createElement('label');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = id;
-            checkbox.checked = checked; // Set initial checked state
-            checkbox.onchange = (event) => {
-                if (event.target.checked) {
-                    addLayer(country, layerType, version, year);
-                } else {
-                    removeLayer(country, layerType, version, year);
-                }
-            };
-            checkboxLabel.appendChild(document.createTextNode(label));
-            checkboxLabel.appendChild(checkbox);
-            return checkboxLabel;
-        }
-
-        function createCountryCheckboxes(country) {
-            const countryDiv = document.createElement('div');
-            countryDiv.className = 'country';
-            countryDiv.appendChild(document.createTextNode(country));
-
-            const hiddenDiv = document.createElement('div');
-            hiddenDiv.className = 'hidden-checkboxes';
-
-            if (pmTilesSources[country]) {
-                if (typeof pmTilesSources[country] === 'object') {
-                    Object.keys(pmTilesSources[country]).forEach(version => {
-                        const versionHeader = document.createElement('div');
-                        versionHeader.appendChild(document.createTextNode(`Version ${version.replace('version', '')}`));
-                        hiddenDiv.appendChild(versionHeader);
-
-                        Object.keys(pmTilesSources[country][version]).forEach(year => {
-                            const isChecked = version === 'version1'; // Check only version 1 layers
-                            hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles-${version}-${year}`, `${year}`, country, 'pmtiles', version, year, isChecked));
-                        });
-                    });
-                } else {
-                    const isChecked = country !== 'Zambia'; // Check only version 1 layers for non-Zambia countries
-                    hiddenDiv.appendChild(createCheckbox(`${country}-pmtiles`, 'Field Boundary', country, 'pmtiles', null, null, isChecked));
-                }
-            }
-
-            if (hiddenDiv.children.length > 0) {
-                countryDiv.appendChild(hiddenDiv);
-                return countryDiv;
-            }
-            return null;
-        }
-
-        const checkboxesContainer = document.createElement('div');
-        checkboxesContainer.className = 'checkboxes';
-
-        ['Congo', 'Zambia', 'Ghana'].forEach(country => {
-            const countryCheckboxes = createCountryCheckboxes(country);
-            if (countryCheckboxes) {
-                checkboxesContainer.appendChild(countryCheckboxes);
-            }
-        });
-
-        document.getElementById('map').appendChild(checkboxesContainer);
-
-        // Initialize the map with all version 1 layers displayed and fit to the full extent
-        ['Congo', 'Ghana'].forEach(country => {
-            if (pmTilesSources[country]) {
-                addLayer(country, 'pmtiles');
-            }
-        });
-
-        if (pmTilesSources.Zambia && pmTilesSources.Zambia['version1']) {
-            Object.keys(pmTilesSources.Zambia['version1']).forEach(year => {
-                addLayer('Zambia', 'pmtiles', 'version1', year);
-            });
-        }
-    </script>
+  </div>
+  <script src="config.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
