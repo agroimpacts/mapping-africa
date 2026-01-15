@@ -7,7 +7,8 @@ window.MA_CONFIG = {
       '2020': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2020_v4.pmtiles',
       '2021': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2021_v4.pmtiles',
       '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2022_v4.pmtiles',
-      '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2023_v4.pmtiles'
+      '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2023_v4.pmtiles',
+      '2024': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2024_v4.pmtiles'
     },
     Ghana: 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v1.pmtiles'
   },
