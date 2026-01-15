@@ -423,7 +423,7 @@ async function buildUI() {
 
     const hint = document.createElement('div');
     hint.className = 'panel-hint';
-    if (activeCountry === 'Zambia') hint.textContent = 'Zambia: 2018–2023 (flat year map).';
+    if (activeCountry === 'Zambia') hint.textContent = 'Zambia: 2018–2024 (flat year map).';
     if (activeCountry === 'Congo')  hint.textContent = 'Congo: 2022.';
     if (activeCountry === 'Ghana')  hint.textContent = 'Ghana: 2018.';
     if (activeCountry === 'Tanzania')  hint.textContent = 'Tanzania: 2019.';
