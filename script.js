@@ -166,7 +166,8 @@ async function addCountryBase(country) {
   if (!entry) return;
   if (typeof entry === 'string') {
     await addLayer(country, 'pmtiles'); 
-  } else if (country === 'Zambia') {
+  } else if (typeof entry === 'object') {
+    // Multi-year country: do nothing here, year selection handles layer addition
   }
 }
 function removeCountryAll(country) {
@@ -175,8 +176,9 @@ function removeCountryAll(country) {
 
   if (typeof entry === 'string') {
     removeLayer(country, 'pmtiles');
-  } else if (country === 'Zambia') {
-    Object.keys(entry).forEach(yr => removeLayer('Zambia', 'pmtiles', yr));
+  } else if (typeof entry === 'object') {
+    // Multi-year country: remove all year layers
+    Object.keys(entry).forEach(yr => removeLayer(country, 'pmtiles', yr));
   }
 
   // remove landcover for that country
