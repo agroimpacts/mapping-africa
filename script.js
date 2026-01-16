@@ -301,7 +301,7 @@ async function buildUI() {
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.id = `country-${country}`;
-    input.checked = (country === 'Tanzania'); 
+    input.checked = (country === 'Zambia'); 
 
     const label = document.createElement('label');
     label.setAttribute('for', input.id);
@@ -312,7 +312,7 @@ async function buildUI() {
         activeCountry = country;
         await addCountryBase(country);
 
-        if (country === 'Tanzania') {
+        if (country === 'Zambia') {
         // turn Field Boundary on (globally)
         setFieldBoundaryVisibility(true);
         const fb = document.getElementById('layer-field');
@@ -320,13 +320,13 @@ async function buildUI() {
 
         // turn Landcover on
         landcoverVisible = true;
-        toggleLandcoverForCountry('Tanzania', true);
+        toggleLandcoverForCountry('Zambia', true);
         const lc = document.getElementById('layer-landcover');
         if (lc) lc.checked = true;
 
-        // auto-open Year and check 2019
+        // auto-open Year and check 2024
         populateYearPanel(yearPanel);
-        const yr = document.getElementById('year-Tanzania-2019');
+        const yr = document.getElementById('year-Zambia-2024');
         if (yr && !yr.checked) {
           yr.checked = true;
           yr.dispatchEvent(new Event('change', { bubbles: true }));
@@ -348,11 +348,11 @@ async function buildUI() {
             countryPanel.style.display = 'none';
         }
 
-        // ensure 2023 is selected and its layer added
-        const y2023 = document.getElementById('year-Zambia-2023');
-        if (y2023 && !y2023.checked) {
-          y2023.checked = true;
-          y2023.dispatchEvent(new Event('change', { bubbles: true }));
+        // ensure 2024 is selected and its layer added
+        const y2024 = document.getElementById('year-Zambia-2024');
+        if (y2024 && !y2024.checked) {
+          y2024.checked = true;
+          y2024.dispatchEvent(new Event('change', { bubbles: true }));
         }
       }
       } else {
@@ -423,7 +423,7 @@ async function buildUI() {
 
     const hint = document.createElement('div');
     hint.className = 'panel-hint';
-    if (activeCountry === 'Zambia') hint.textContent = 'Zambia: 2018–2024 (flat year map).';
+    if (activeCountry === 'Zambia') hint.textContent = 'Zambia: 2018–2024.';
     if (activeCountry === 'Congo')  hint.textContent = 'Congo: 2022.';
     if (activeCountry === 'Ghana')  hint.textContent = 'Ghana: 2018.';
     if (activeCountry === 'Tanzania')  hint.textContent = 'Tanzania: 2019.';
@@ -468,20 +468,19 @@ async function buildUI() {
   if (!defaultsApplied) {
   suppressAutoOpen = true;       // block auto-opening Year panel
 
-  activeCountry = 'Tanzania'; 
+  activeCountry = 'Zambia'; 
 
-  ['Congo','Ghana', 'Zambia'].forEach(c => { 
+  ['Congo','Ghana', 'Tanzania'].forEach(c => { 
     const cb = document.getElementById(`country-${c}`);
     if (cb) cb.checked = false;
   });
-  const tcb = document.getElementById('country-Tanzania'); 
-  if (tcb && !tcb.checked) tcb.checked = true;
+  const zcb = document.getElementById('country-Zambia'); 
+  if (zcb && !zcb.checked) zcb.checked = true;
 
   // trigger the usual add/fit without popping Year panel
-  tcb?.dispatchEvent(new Event('change', { bubbles: true }));
-
-  // Preload the 2019 layer so the checkbox will be checked later
-  await addYearLayer('Tanzania', '2019'); 
+  zcb?.dispatchEvent(new Event('change', { bubbles: true }));
+  // Preload the 2024 layer so the checkbox will be checked later
+  await addYearLayer('Zambia', '2024'); 
 
   suppressAutoOpen = false;      // allow normal user-driven openings
   defaultsApplied = true;
@@ -489,8 +488,8 @@ async function buildUI() {
 }
 
 /* ===== Boot ===== */
-const DEFAULT_COUNTRY = 'Tanzania'; 
-const DEFAULT_YEAR = '2019'; 
+const DEFAULT_COUNTRY = 'Zambia'; 
+const DEFAULT_YEAR = '2024'; 
 
 window.addEventListener('DOMContentLoaded', () => {
   // PMTiles protocol
@@ -512,8 +511,8 @@ window.addEventListener('DOMContentLoaded', () => {
       },
       layers: [{ id: 'basemap', type: 'raster', source: 'basemap' }]
     },
-    center: [34.8955, -6.373], // Tanzania center
-    zoom: 13
+    center: [27.8,  -13.1], // Zambia 
+    zoom: 5.5
   });
 
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-left');
