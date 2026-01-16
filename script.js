@@ -34,6 +34,10 @@ const countryViews = window.MA_CONFIG?.countryViews;
 /* EOX base map (Sentinel-2 cloudless) */
 const EOX = "https://tiles.maps.eox.at/wmts?layer=s2cloudless-2020_3857&style=default&tilematrixset=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix={z}&TileCol={x}&TileRow={y}"
 
+/* ===== Default Settings ===== */
+const DEFAULT_COUNTRY = 'Zambia'; 
+const DEFAULT_YEAR = '2024'; 
+
 /* ===== UI State ===== */
 let activeCountry = null;          // current selected country for Year panel
 let fieldBoundaryVisible = false;  // changed to false for Tanzania default
@@ -301,7 +305,7 @@ async function buildUI() {
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.id = `country-${country}`;
-    input.checked = (country === 'Zambia'); 
+    input.checked = (country === DEFAULT_COUNTRY); 
 
     const label = document.createElement('label');
     label.setAttribute('for', input.id);
@@ -312,7 +316,7 @@ async function buildUI() {
         activeCountry = country;
         await addCountryBase(country);
 
-        if (country === 'Zambia') {
+        if (country === DEFAULT_COUNTRY) {
         // turn Field Boundary on (globally)
         setFieldBoundaryVisibility(true);
         const fb = document.getElementById('layer-field');
@@ -320,13 +324,13 @@ async function buildUI() {
 
         // turn Landcover on
         landcoverVisible = true;
-        toggleLandcoverForCountry('Zambia', true);
+        toggleLandcoverForCountry(DEFAULT_COUNTRY, true);
         const lc = document.getElementById('layer-landcover');
         if (lc) lc.checked = true;
 
-        // auto-open Year and check 2024
+        // auto-open Year and check default year
         populateYearPanel(yearPanel);
-        const yr = document.getElementById('year-Zambia-2024');
+        const yr = document.getElementById(`year-${DEFAULT_COUNTRY}-${DEFAULT_YEAR}`);
         if (yr && !yr.checked) {
           yr.checked = true;
           yr.dispatchEvent(new Event('change', { bubbles: true }));
@@ -339,22 +343,22 @@ async function buildUI() {
         // keep Landcover synced with active country when on
         if (landcoverVisible) toggleLandcoverForCountry(activeCountry, true);
 
-        // auto-open Year for Zambia if desired
-        if (country === 'Zambia') {
+        // auto-open Year for default country if desired
+        if (country === DEFAULT_COUNTRY) {
           populateYearPanel(yearPanel);
           // only auto-open for user clicks, not during defaults init
           if (!suppressAutoOpen) {
             yearPanel.style.display = 'block';
             countryPanel.style.display = 'none';
-        }
+          }
 
-        // ensure 2024 is selected and its layer added
-        const y2024 = document.getElementById('year-Zambia-2024');
-        if (y2024 && !y2024.checked) {
-          y2024.checked = true;
-          y2024.dispatchEvent(new Event('change', { bubbles: true }));
+          // ensure default year is selected and its layer added
+          const yrDefault = document.getElementById(`year-${DEFAULT_COUNTRY}-${DEFAULT_YEAR}`);
+          if (yrDefault && !yrDefault.checked) {
+            yrDefault.checked = true;
+            yrDefault.dispatchEvent(new Event('change', { bubbles: true }));
+          }
         }
-      }
       } else {
         removeCountryAll(country);
         if (activeCountry === country) activeCountry = null;
@@ -466,31 +470,21 @@ async function buildUI() {
   
   /*=== Defaults ===*/
   if (!defaultsApplied) {
-  suppressAutoOpen = true;       // block auto-opening Year panel
-
-  activeCountry = 'Zambia'; 
-
-  ['Congo','Ghana', 'Tanzania'].forEach(c => { 
-    const cb = document.getElementById(`country-${c}`);
-    if (cb) cb.checked = false;
-  });
-  const zcb = document.getElementById('country-Zambia'); 
-  if (zcb && !zcb.checked) zcb.checked = true;
-
-  // trigger the usual add/fit without popping Year panel
-  zcb?.dispatchEvent(new Event('change', { bubbles: true }));
-  // Preload the 2024 layer so the checkbox will be checked later
-  await addYearLayer('Zambia', '2024'); 
-
-  suppressAutoOpen = false;      // allow normal user-driven openings
-  defaultsApplied = true;
-}
+    suppressAutoOpen = true;       // block auto-opening Year panel during init
+    
+    // Trigger default country checkbox change to initialize everything
+    const zcb = document.getElementById(`country-${DEFAULT_COUNTRY}`);
+    if (zcb) {
+      zcb.checked = true;
+      zcb.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    
+    suppressAutoOpen = false;
+    defaultsApplied = true;
+  }
 }
 
 /* ===== Boot ===== */
-const DEFAULT_COUNTRY = 'Zambia'; 
-const DEFAULT_YEAR = '2024'; 
-
 window.addEventListener('DOMContentLoaded', () => {
   // PMTiles protocol
   protocol = new Protocol();
@@ -521,18 +515,8 @@ window.addEventListener('DOMContentLoaded', () => {
   maplibregl.addProtocol('cog', MaplibreCOGProtocol.cogProtocol);
 
   map.on('load', async () => {
-    // Build UI first 
+    // Build UI - handles all defaults (country, year, layers)
     buildUI();
-
-    // Preselect Year = 2019 
-    const yearInput = document.getElementById(`year-${DEFAULT_COUNTRY}-${DEFAULT_YEAR}`);
-    if (yearInput) {
-      yearInput.checked = true;
-      yearInput.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-
-    // Set default year layer
-    if (typeof setCurrentYear === 'function') setCurrentYear(DEFAULT_YEAR);
   });
 
 });
