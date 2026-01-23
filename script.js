@@ -25,11 +25,14 @@ async function detectSourceLayer(url) {
   return candidate;
 }
 
-/* pmtiles sources (from data/config.js) */
+/* pmtiles sources (from config.js) */
 const pmTilesSources = window.MA_CONFIG?.pmTilesSources;
 
-/* Country view (from data/config.js) */
+/* Country view (from config.js) */
 const countryViews = window.MA_CONFIG?.countryViews;
+
+/* landcover sources (from config.js) */
+const landcoverSources = window.MA_CONFIG?.landcoverSources;
 
 /* EOX base map (Sentinel-2 cloudless) */
 const EOX = "https://tiles.maps.eox.at/wmts?layer=s2cloudless-2020_3857&style=default&tilematrixset=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix={z}&TileCol={x}&TileRow={y}"
@@ -43,22 +46,18 @@ let activeCountry = null;          // current selected country for Year panel
 let fieldBoundaryVisible = false;  // changed to false for Tanzania default
 let landcoverVisible = false;      // global landcover toggle (for active country)
 
-const landcoverSources = window.MA_CONFIG?.landcoverSources;
+
 
 /* ===== Layer helpers ===== */
-function layerKey(country, layerType, year = null) {
-  return year ? `${country}-${layerType}-${year}` : `${country}-${layerType}`;
+function layerKey(country, layerType, year) {
+  return `${country}-${layerType}-${year}`;
 }
 
-async function addLayer(country, layerType, year = null) {
-  // resolve URL from pmTilesSources 
-  let sourceUrl;
+async function addLayer(country, layerType, year) {
+  // resolve URL from pmTilesSources (all countries now use { year: url } format)
   const entry = pmTilesSources[country];
-  if (typeof entry === 'string') {
-    sourceUrl = entry;
-  } else if (year && entry?.[year]) {
-    sourceUrl = entry[year];
-  } else {
+  const sourceUrl = entry?.[year];
+  if (!sourceUrl) {
     throw new Error(`Missing source URL for ${country} ${year ?? ''}`);
   }
 
@@ -101,7 +100,7 @@ async function addLayer(country, layerType, year = null) {
   }
 }
 
-function removeLayer(country, layerType, year = null) {
+function removeLayer(country, layerType, year) {
   const key = layerKey(country, layerType, year);
   const entry = layers[key];
   if (!entry) return;
@@ -123,9 +122,15 @@ function setFieldBoundaryVisibility(visible) {
 // remember the last URL used per country
 const landcoverUrlCache = new Map();  // key: country, val: cogUrl
 
-function toggleLandcoverForCountry(country, on) {
+function toggleLandcoverForCountry(country, on, year = null) {
   if (!country) return;
-  const rawUrl = landcoverSources[country];
+  const entry = landcoverSources[country];
+  if (!entry) return;
+
+  // If target year not specified, use the latest available year
+  const availableYears = Object.keys(entry).sort();
+  const targetYear = year || availableYears[availableYears.length - 1];
+  const rawUrl = entry[targetYear];
   if (!rawUrl) return;
 
   // build a COG styled URL. 
@@ -144,8 +149,8 @@ function toggleLandcoverForCountry(country, on) {
     }
 
     if (!map.getSource(sourceId)) {
-      map.addSource(sourceId, { type: 'raster', url: cogUrl, tileSize: 256,minzoom: 0, 
-  maxzoom: 22 });
+      map.addSource(sourceId, { type: 'raster', url: cogUrl, tileSize: 256, minzoom: 0, 
+        maxzoom: 22 });
     }
     if (!map.getLayer(layerId)) {
       map.addLayer({ id: layerId, type: 'raster', source: sourceId });
@@ -164,22 +169,14 @@ function toggleLandcoverForCountry(country, on) {
 async function addCountryBase(country) {
   const entry = pmTilesSources[country];
   if (!entry) return;
-  if (typeof entry === 'string') {
-    await addLayer(country, 'pmtiles'); 
-  } else if (typeof entry === 'object') {
-    // Multi-year country: do nothing here, year selection handles layer addition
-  }
 }
+
 function removeCountryAll(country) {
   const entry = pmTilesSources[country];
   if (!entry) return;
 
-  if (typeof entry === 'string') {
-    removeLayer(country, 'pmtiles');
-  } else if (typeof entry === 'object') {
-    // Multi-year country: remove all year layers
-    Object.keys(entry).forEach(yr => removeLayer(country, 'pmtiles', yr));
-  }
+  // Remove all year layers for the country
+  Object.keys(entry).forEach(yr => removeLayer(country, 'pmtiles', yr));
 
   // remove landcover for that country
   toggleLandcoverForCountry(country, false);
@@ -189,45 +186,40 @@ function removeCountryAll(country) {
 function listYearsForCountry(country) {
   const entry = pmTilesSources[country];
   if (entry && typeof entry === 'object') return Object.keys(entry).sort();
-  if (country === 'Tanzania') return ['2019'];  
-  if (country === 'Congo') return ['2022'];
-  if (country === 'Ghana') return ['2018'];
   return [];
 }
 
 function yearLayerKey(country, year) {
-  return (country === 'Zambia') ? `${country}-pmtiles-${year}` : `${country}-pmtiles`;
+  return `${country}-pmtiles-${year}`;
 }
+
 function yearLayerExists(country, year) {
   return !!layers[yearLayerKey(country, year)];
 }
 
+// Check if country has landcover but no pmtiles (landcover-only country)
+function isLandcoverOnlyCountry(country) {
+  return landcoverSources?.[country] && !pmTilesSources?.[country];
+}
+
 async function addYearLayer(country, year) {
-  if (country === 'Zambia') {
-    await addLayer('Zambia', 'pmtiles', year);
-  } else if (country === 'Congo') {
-    await addLayer('Congo', 'pmtiles'); // 2022 single set
-  } else if (country === 'Ghana') {
-    await addLayer('Ghana', 'pmtiles'); // 2018 single set
-  } else if (country === 'Tanzania') {
+  await addLayer(country, 'pmtiles', year);
+  
+  // For landcover-only countries, also enable landcover
+  if (isLandcoverOnlyCountry(country)) {
     landcoverVisible = true;
-    toggleLandcoverForCountry('Tanzania', true);
-    // keep Layer panel checkbox in sync
+    toggleLandcoverForCountry(country, true);
     const lc = document.getElementById('layer-landcover');
     if (lc) lc.checked = true;
   }
 }
 
 function removeYearLayer(country, year) {
-  if (country === 'Zambia') {
-    removeLayer('Zambia', 'pmtiles', year);
-  } else if (country === 'Congo') {
-    removeLayer('Congo', 'pmtiles');
-  } else if (country === 'Ghana') {
-    removeLayer('Ghana', 'pmtiles');
-  } else if (country === 'Tanzania') {
-    toggleLandcoverForCountry('Tanzania', false);
-    // uncheck Layer panel checkbox
+  removeLayer(country, 'pmtiles', year);
+  
+  // For landcover-only countries, also disable landcover
+  if (isLandcoverOnlyCountry(country)) {
+    toggleLandcoverForCountry(country, false);
     const lc = document.getElementById('layer-landcover');
     if (lc) lc.checked = false;
   }
