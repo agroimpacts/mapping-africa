@@ -34,12 +34,14 @@ const countryViews = window.MA_CONFIG?.countryViews;
 /* landcover sources (from config.js) */
 const landcoverSources = window.MA_CONFIG?.landcoverSources;
 
+/* Default Settings (from config.js) */
+const DEFAULT_COUNTRY = window.MA_CONFIG?.defaultCountry; 
+const DEFAULT_YEAR = window.MA_CONFIG?.defaultYear; 
+
 /* EOX base map (Sentinel-2 cloudless) */
 const EOX = "https://tiles.maps.eox.at/wmts?layer=s2cloudless-2020_3857&style=default&tilematrixset=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix={z}&TileCol={x}&TileRow={y}"
 
-/* ===== Default Settings ===== */
-const DEFAULT_COUNTRY = 'Zambia'; 
-const DEFAULT_YEAR = '2024'; 
+
 
 /* ===== UI State ===== */
 let activeCountry = null;          // current selected country for Year panel
