@@ -309,7 +309,7 @@ async function buildUI() {
   document.body.appendChild(layerPanel);
 
   /* ---- Country Panel ---- */
-  ['Congo', 'Zambia', 'Ghana','Tanzania'].forEach(country => {
+  Object.keys(window.MA_CONFIG.countryViews).forEach(country => {
     const row = document.createElement('div');
     row.className = 'panel-row';
 
