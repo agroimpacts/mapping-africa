@@ -1,4 +1,7 @@
 window.MA_CONFIG = {
+  defaultCountry: 'Zambia',
+  defaultYear: '2024',
+  
   pmTilesSources: {
     Congo: {
       '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/congo_2022_v1.pmtiles'
