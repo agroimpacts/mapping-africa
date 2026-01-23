@@ -184,9 +184,19 @@ function removeCountryAll(country) {
 
 /* ===== Year button ===== */
 function listYearsForCountry(country) {
-  const entry = pmTilesSources[country];
-  if (entry && typeof entry === 'object') return Object.keys(entry).sort();
-  return [];
+  const pmEntry = pmTilesSources?.[country];
+  const lcEntry = landcoverSources?.[country];
+  
+  // Combine years from both pmtiles and landcover sources
+  const yearsSet = new Set();
+  if (pmEntry && typeof pmEntry === 'object') {
+    Object.keys(pmEntry).forEach(yr => yearsSet.add(yr));
+  }
+  if (lcEntry && typeof lcEntry === 'object') {
+    Object.keys(lcEntry).forEach(yr => yearsSet.add(yr));
+  }
+  
+  return Array.from(yearsSet).sort();
 }
 
 function yearLayerKey(country, year) {
@@ -203,19 +213,25 @@ function isLandcoverOnlyCountry(country) {
 }
 
 async function addYearLayer(country, year) {
-  await addLayer(country, 'pmtiles', year);
+  // Only add pmtiles layer if the country has pmtiles data
+  if (pmTilesSources?.[country]?.[year]) {
+    await addLayer(country, 'pmtiles', year);
+  }
   
   // For landcover-only countries, also enable landcover
   if (isLandcoverOnlyCountry(country)) {
     landcoverVisible = true;
-    toggleLandcoverForCountry(country, true);
+    toggleLandcoverForCountry(country, true, year);
     const lc = document.getElementById('layer-landcover');
     if (lc) lc.checked = true;
   }
 }
 
 function removeYearLayer(country, year) {
-  removeLayer(country, 'pmtiles', year);
+  // Only remove pmtiles layer if the country has pmtiles data
+  if (pmTilesSources?.[country]?.[year]) {
+    removeLayer(country, 'pmtiles', year);
+  }
   
   // For landcover-only countries, also disable landcover
   if (isLandcoverOnlyCountry(country)) {
