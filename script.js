@@ -242,7 +242,6 @@ function removeYearLayer(country, year) {
 }
 
 let defaultsApplied = false;
-let suppressAutoOpen = false; // prevents auto-opening panel during init
 
 let firstInit = true; 
 
@@ -326,7 +325,6 @@ async function buildUI() {
         activeCountry = country;
         await addCountryBase(country);
 
-        if (country === DEFAULT_COUNTRY) {
         // turn Field Boundary on (globally)
         setFieldBoundaryVisibility(true);
         const fb = document.getElementById('layer-field');
@@ -334,18 +332,9 @@ async function buildUI() {
 
         // turn Landcover on
         landcoverVisible = true;
-        toggleLandcoverForCountry(DEFAULT_COUNTRY, true);
+        toggleLandcoverForCountry(country, true);
         const lc = document.getElementById('layer-landcover');
         if (lc) lc.checked = true;
-
-        // auto-open Year and check default year
-        populateYearPanel(yearPanel);
-        const yr = document.getElementById(`year-${DEFAULT_COUNTRY}-${DEFAULT_YEAR}`);
-        if (yr && !yr.checked) {
-          yr.checked = true;
-          yr.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      }
 
         // zoom to country view (center/zoom)
         flyToCountry(country);
@@ -353,20 +342,21 @@ async function buildUI() {
         // keep Landcover synced with active country when on
         if (landcoverVisible) toggleLandcoverForCountry(activeCountry, true);
 
-        // auto-open Year for default country if desired
-        if (country === DEFAULT_COUNTRY) {
-          populateYearPanel(yearPanel);
-          // only auto-open for user clicks, not during defaults init
-          if (!suppressAutoOpen) {
-            yearPanel.style.display = 'block';
-            countryPanel.style.display = 'none';
-          }
+        // auto-open Year panel and check latest year for all countries
+        populateYearPanel(yearPanel);
+        
+        // always auto-open Year panel when a country is selected
+        yearPanel.style.display = 'block';
+        countryPanel.style.display = 'none';
 
-          // ensure default year is selected and its layer added
-          const yrDefault = document.getElementById(`year-${DEFAULT_COUNTRY}-${DEFAULT_YEAR}`);
-          if (yrDefault && !yrDefault.checked) {
-            yrDefault.checked = true;
-            yrDefault.dispatchEvent(new Event('change', { bubbles: true }));
+        // auto-select the latest year for this country
+        const years = listYearsForCountry(country);
+        if (years.length > 0) {
+          const latestYear = years[years.length - 1]; // years are sorted, last is latest
+          const yrCheckbox = document.getElementById(`year-${country}-${latestYear}`);
+          if (yrCheckbox && !yrCheckbox.checked) {
+            yrCheckbox.checked = true;
+            yrCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
           }
         }
       } else {
@@ -480,8 +470,6 @@ async function buildUI() {
   
   /*=== Defaults ===*/
   if (!defaultsApplied) {
-    suppressAutoOpen = true;       // block auto-opening Year panel during init
-    
     // Trigger default country checkbox change to initialize everything
     const zcb = document.getElementById(`country-${DEFAULT_COUNTRY}`);
     if (zcb) {
@@ -489,7 +477,6 @@ async function buildUI() {
       zcb.dispatchEvent(new Event('change', { bubbles: true }));
     }
     
-    suppressAutoOpen = false;
     defaultsApplied = true;
   }
 }
