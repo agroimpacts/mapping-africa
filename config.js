@@ -30,7 +30,7 @@ window.MA_CONFIG = {
     Congo:    { center: [15.275, 0.181],  zoom: 5 },
     Zambia:   { center: [27.8,  -13.1],   zoom: 5.5 },
     Ghana:    { center: [-1.027, 7.858],  zoom: 6 },
-    Tanzania: { center: [34.8955, -6.373], zoom: 7 }
+    Tanzania: { center: [34.8955, -6.373], zoom: 9 }
   },
 
 };
