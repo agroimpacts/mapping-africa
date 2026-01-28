@@ -9,6 +9,8 @@
   <script src="https://unpkg.com/pmtiles@3.2.0/dist/pmtiles.js"></script>
   <script src="https://unpkg.com/@geomatico/maplibre-cog-protocol/dist/index.js"></script>
   <link rel="stylesheet" href="style.css" />
+  <!-- w3.css for popup modal -->
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
   <div id="header">
@@ -17,8 +19,49 @@
         <div id="header-text"><b>African Cropland Web Map</b></div>
         <a href="https://github.com/agroimpacts/mapping-africa"><img id="git-logo" src="data/github-icon-white-5.jpg" alt="github" /></a>
      </div>
-    <div id="right-header">
-      <div id="toolbar"></div>
+    <div id="right-header">     
+      <div id="toolbar">
+       <button type="button" class="button about-btn" onclick="document.getElementById('id01').style.display='block'">
+        About
+      </button> 
+      </div>
+    </div>
+  </div>
+  <div id="id01" class="w3-modal">
+    <div class="w3-modal-content w3-animate-zoom">
+      <header class="w3-container w3-teal">
+        <span onclick="document.getElementById('id01').style.display='none'"
+        class="w3-button w3-display-topright">&times;</span>
+        <h4><b>High resolution, annual cropland and landcover maps for African countries</b></h4>
+      </header>
+      <div class="w3-container" style="text-align: left;">
+        <p>
+          This site provides links to view and obtain high resolution cropland and landcover maps developed by <a href="https://clarku.edu">Clark University</a>’s
+          <a href="https://agroimpacts.info/">Agricultural Impacts Research Group</a> forselected African countries using various machine learning approaches applied to Planet imagery.
+        </p>
+        <p>
+          There are two types of data currently available:
+        </p>
+        <ul>
+          <li>
+            <b>Cropland</b>: Annual (beginning in year 2018) crop field boundary
+    maps of several African countries, developed using several different
+    modeling approaches applied to Planet imagery (Estes et al, 2022a;
+    Estes et al, 2022b; Wussah et al, 2023). Data are provided as
+    vectorized boundaries, in both pmtile and geoparquet formats. These
+    datasets are under active development, and more countries and annual
+    maps are updated as they are created.
+          </li>
+          <li>
+            <b>Landcover</b>: A 2018 multi-class land cover map for Tanzania
+    developed using U-Net applied to Planet imagery and Sentinel-1 time
+    series derivatives (Song et al, 2023). See
+    <a href="https://lleisong.github.io/website//projects/reconcile_human_elephants/">here</a>
+    for more detail on the methods and larger project (led by Dr. Lei
+    Song) for which this map was created.
+          </li>  
+        </ul>
+      </div>
     </div>
   </div>
   <div id="app">
