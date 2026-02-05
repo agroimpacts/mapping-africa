@@ -86,6 +86,15 @@ Maps can also be loaded and displayed using a Jupyter notebook (see the
 example
 [here](https://github.com/agroimpacts/mapping-africa/blob/main/notebooks/map_viewer.ipynb).
 
+## Editing `config.js`
+
+The web map can be configured by editing `config.js`:
+
+- **`defaultCountry`** and **`defaultYear`**: Set the default country and year displayed when the page loads.
+- **`countryViews`**: Define each country's map center coordinates and zoom level.
+- **`pmTilesSources`**: Add vector PMTiles layers (cropland boundaries). Structure: `Country: { 'year': 'url' }`.
+- **`landcoverSources`**: Add raster COG layers (landcover maps). Structure: `Country: { 'year': 'url' }`. 
+
 ## Usage
 
 Use of these maps is governed by the terms of the [Planet NICFI
