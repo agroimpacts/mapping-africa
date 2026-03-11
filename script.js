@@ -152,10 +152,12 @@ function toggleLandcoverForCountry(country, on, year = null) {
 
     if (!map.getSource(sourceId)) {
       map.addSource(sourceId, { type: 'raster', url: cogUrl, tileSize: 256, minzoom: 0, 
-        maxzoom: 22 });
+        maxzoom: 15 });
     }
     if (!map.getLayer(layerId)) {
-      map.addLayer({ id: layerId, type: 'raster', source: sourceId });
+      map.addLayer({ id: layerId, type: 'raster', source: sourceId,
+        paint: { 'raster-fade-duration': 0 }
+      });
     }
 
     landcoverUrlCache.set(country, cogUrl);
