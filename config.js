@@ -18,6 +18,10 @@ window.MA_CONFIG = {
     Ghana: {
       '2018': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v1.pmtiles'
     },
+    Nigeria: {
+       '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/nigeria_2022_v2.pmtiles',
+       '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/nigeria_2023_v2.pmtiles'
+    }
   },
 
   landcoverSources: {
@@ -30,7 +34,7 @@ window.MA_CONFIG = {
     Congo:    { center: [15.275, 0.181],  zoom: 5 },
     Zambia:   { center: [27.8,  -13.1],   zoom: 5.5 },
     Ghana:    { center: [-1.027, 7.858],  zoom: 6 },
-    Tanzania: { center: [34.8955, -6.373], zoom: 7 }
+    Tanzania: { center: [34.8955, -6.373], zoom: 9 },
+    Nigeria:  { center: [9.081999, 8.675277], zoom: 5 },
   },
-
 };
