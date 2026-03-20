@@ -38,9 +38,9 @@ const landcoverSources = window.MA_CONFIG?.landcoverSources;
 const DEFAULT_COUNTRY = window.MA_CONFIG?.defaultCountry; 
 const DEFAULT_YEAR = window.MA_CONFIG?.defaultYear; 
 
-/* EOX base map (Sentinel-2 cloudless) */
-const EOX = "https://tiles.maps.eox.at/wmts?layer=s2cloudless-2020_3857&style=default&tilematrixset=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix={z}&TileCol={x}&TileRow={y}"
-
+/* Maptiler base map */
+const maptiler_apiKey= window.MAPTILER_APIKEY;
+const maptiler = `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptiler_apiKey}`;
 
 
 /* ===== UI State ===== */
@@ -156,6 +156,8 @@ function toggleLandcoverForCountry(country, on, year = null) {
     }
     if (!map.getLayer(layerId)) {
       map.addLayer({ id: layerId, type: 'raster', source: sourceId,
+        minzoom: 0,
+        maxzoom: 22,
         paint: { 'raster-fade-duration': 0 }
       });
     }
@@ -490,7 +492,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // PMTiles protocol
   protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', protocol.tile);
-  
+
   map = new maplibregl.Map({
     container: 'map',
     style: {
@@ -498,9 +500,9 @@ window.addEventListener('DOMContentLoaded', () => {
       sources: {
         basemap: {
           type: 'raster',
-          tiles: [EOX],
+          tiles: [maptiler],
           tileSize: 256,
-          attribution: 'Tiles © 2020 EOX IT Services GmbH, Sentinel-2 cloudless',
+          attribution: '© MapTiler © OpenStreetMap contributors',
           maxzoom: 20
         }
       },
@@ -514,9 +516,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // COG protocol   
   maplibregl.addProtocol('cog', MaplibreCOGProtocol.cogProtocol);
+  
+  map.on('zoom', () => {
+  document.getElementById('zoom-value').textContent = map.getZoom().toFixed(2);
+});
 
   map.on('load', async () => {
     // Build UI - handles all defaults (country, year, layers)
+    document.getElementById('zoom-value').textContent = map.getZoom().toFixed(2);
     buildUI();
   });
 
