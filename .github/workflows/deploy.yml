@@ -1,0 +1,70 @@
+# label show in the GitHub Actions tab
+name: mapping-africa
+# When to run this workflow
+on:
+  push:  # run automatically on pushes to the main branch
+    branches: [ main ]
+  workflow_dispatch: # allow manual runs from the Actions tab
+# What permissions this workflow needs (required by GitHub Pages)
+permissions:
+  contents: read # can read the repository
+  pages: write # can publish to GitHub Pages
+  id-token: write # allows OIDC token for secure deployment
+# only one deployment at a time; cancel any in-progress runs
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+# the workflow's jobs
+jobs:
+  build:
+    runs-on: ubuntu-latest # GitHub-hosted Linux runner
+    steps:
+      #check out repo code
+      - name: Checkout  
+        uses: actions/checkout@v4 
+      
+      # configure the Pages deployment environment (e.g., sets up tokens)
+      - name: Configure Pages 
+        uses: actions/configure-pages@v5
+      # stage a clean site into dist
+      - name: Prepare dist 
+        shell: bash
+        run: |
+          set -euo pipefail  # fail on errors
+          rm -rf dist
+          mkdir -p dist         
+          # copy everything except CI/build folders
+          rsync -av \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'node_modules' \
+            --exclude 'dist' \
+            ./ dist/
+
+      # Create env.js from repo secret
+      - name: Write env.js from secret
+        run: |
+          echo "window.MAPTILER_APIKEY = '${{ secrets.MAPTILER_APIKEY }}';" > dist/env.js
+      
+      # Ensure .nojekyll file exists to prevent GitHub Pages from ignoring files/folders that start with an underscore
+      - name: Add .nojekyll
+        run: touch dist/.nojekyll
+      # Upload dist/ as the artifact for deployment
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  # Deploy to GitHub Pages
+  deploy:
+    needs: build   # wait for build job to finish
+    runs-on: ubuntu-latest
+    permissions:   # set job-level permissions
+      pages: write        
+      id-token: write     
+    environment:   # deploy to the GitHub Pages environment
+      name: github-pages  
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:  # deploy the artifact to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
