@@ -517,13 +517,8 @@ window.addEventListener('DOMContentLoaded', () => {
   // COG protocol   
   maplibregl.addProtocol('cog', MaplibreCOGProtocol.cogProtocol);
   
-  map.on('zoom', () => {
-  document.getElementById('zoom-value').textContent = map.getZoom().toFixed(2);
-});
-
   map.on('load', async () => {
     // Build UI - handles all defaults (country, year, layers)
-    document.getElementById('zoom-value').textContent = map.getZoom().toFixed(2);
     buildUI();
   });
 
