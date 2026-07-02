@@ -19,6 +19,7 @@ window.MA_CONFIG = {
       '2018': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v1.pmtiles'
     },
     Nigeria: {
+       '2018': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/nigeria_2018_v3.pmtiles',
        '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/nigeria_2022_v2.pmtiles',
        '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/nigeria_2023_v2.pmtiles'
     }
