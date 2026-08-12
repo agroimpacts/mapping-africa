@@ -7,7 +7,11 @@ window.MA_CONFIG = {
     '2018': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/angola_2018_v4.pmtiles',
     '2019': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/angola_2019_v4.pmtiles',
     '2020': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/angola_2020_v4.pmtiles',
-    '2021': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/angola_2021_v4.pmtiles'
+    '2021': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/angola_2021_v4.pmtiles',
+    '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/angola_2022_v4.pmtiles',
+    '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/angola_2023_v4.pmtiles',
+    '2024': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/angola_2024_v4.pmtiles' 
+
   },
     Congo: {
       '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/congo_2022_v1.pmtiles'
