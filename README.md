@@ -99,7 +99,7 @@ The web map can be configured by editing `config.js`:
 
 Use of these maps is governed by the terms of the [Planet NICFI
 participant license
-agreement](https://assets.planet.com/docs/Planet_ParticipantLicenseAgreement_NICFI.pdf)
+agreement](https://planet.widen.net/s/zfdpf8qxwk/participantlicenseagreement_nicfi_2024)
 
 ## Publications
 
