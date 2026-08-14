@@ -31,7 +31,6 @@ window.MA_CONFIG = {
       '2020': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2020_v4.pmtiles',
       '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2022_v4.pmtiles',
       '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2023_v4.pmtiles',
-      '2024': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2024_v4.pmtiles'
        
     },
     Tanzania: {
