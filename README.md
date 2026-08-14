@@ -150,7 +150,7 @@ For the current Zambia maps, please cite the following paper, which describes bo
 The methods used to generate these maps are drawn from the following two papers: 
 
 > Xiong, S., Li, W., Hadunka, P., Ross, G.D., Chakraborty, T., Khallaghi, S., Abedi, R., Daum, K., Xue, K., Yao, Y.-T., Chilenga, A., Rufin, P., Khan, A., Potapov, P., Baylis, K., Caylor, K. & Estes, L. (2026). High-resolution remote sensing reveals medium-scale farms at the frontiers of agricultural change in Africa. *agriRxiv*, 2026, 20260367814. 
-
+>
 > Muhawenayo, G., Robinson, C., Khanal, S., Fang, Z., Corley, I., Wollam, A., Gao, T., Strnad, L., Avery, R., Estes, L., Tárano, A., Jacobs, N. & Kerner, H. (2026). PRUE: A Practical Recipe for Field Boundary Segmentation at Scale. *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, 6484–6495. 
 
 ## Publications
