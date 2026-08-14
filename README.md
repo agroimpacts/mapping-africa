@@ -1,6 +1,5 @@
 # High resolution, annual cropland and landcover maps for African countries
 
-
 ## Background
 
 This site provides links to view and obtain high resolution cropland and
@@ -101,6 +100,45 @@ Use of these maps is governed by the terms of the [Planet NICFI
 participant license
 agreement](https://planet.widen.net/s/zfdpf8qxwk/participantlicenseagreement_nicfi_2024)
 
+## Citation  
+
+If you use the these maps in a publication, report, or other research product, please cite according to these guidelines:
+
+### Land cover
+Please cite the following paper:
+
+Song, L., Estes, A.B. & Estes, L.D. (2023) [A super-ensemble approach to
+map land cover types with high resolution over data-sparse African
+savanna landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405).
+*International Journal of Applied Earth Observation and Geoinformation*,
+116, 103152.
+
+### Field boundaries
+
+Please cite the Mapping Africa dataset: 
+
+Estes, L.D., Essuman, G., Xiong, S., Abedi, R., Chakraborty, T. (2026). Mapping Africa: Annual high-resolution cropland field boundary maps. Agricultural Impacts Research Group, Clark University. https://github.com/agroimpacts/mapping-africa. Accessed [date]. 
+
+In addition to citing the dataset citation above, please cite the publication(s) below, which differ by country as the model and production methods varied. 
+
+#### Zambia 
+
+For the current Zambia maps, please cite the following paper, which describes both the maps and the methods used to generate them: 
+
+Xiong, S., Li, W., Hadunka, P., Ross, G.D., Chakraborty, T., Khallaghi, S., Abedi, R., Daum, K., Xue, K., Yao, Y.-T., Chilenga, A., Rufin, P., Khan, A., Potapov, P., Baylis, K., Caylor, K. & Estes, L. (2026). High-resolution remote sensing reveals medium-scale farms at the frontiers of agricultural change in Africa. agriRxiv, 2026, 20260367814. 
+
+#### Republic of the Congo 
+
+Khallaghi, S., Abedi, R., Abou Ali, H., Alemohammad, H., Dziedzorm Asipunu, M., Alatise, I., Ha, N., Luo, B., Mai, C., Song, L., Wussah, A.O., Xiong, S., Yao, Y.-T., Zhang, Q. & Estes, L.D. (2025) Generalization enhancement strategies to enable cross-year cropland mapping with convolutional neural networks trained using historical samples. Remote Sensing, 17, 474.  
+
+#### All other countries 
+
+The methods used to generate these maps are drawn from the following two papers: 
+
+Xiong, S., Li, W., Hadunka, P., Ross, G.D., Chakraborty, T., Khallaghi, S., Abedi, R., Daum, K., Xue, K., Yao, Y.-T., Chilenga, A., Rufin, P., Khan, A., Potapov, P., Baylis, K., Caylor, K. & Estes, L. (2026). High-resolution remote sensing reveals medium-scale farms at the frontiers of agricultural change in Africa. agriRxiv, 2026, 20260367814. 
+
+Muhawenayo, G., Robinson, C., Khanal, S., Fang, Z., Corley, I., Wollam, A., Gao, T., Strnad, L., Avery, R., Estes, L., Tárano, A., Jacobs, N. & Kerner, H. (2026). PRUE: A Practical Recipe for Field Boundary Segmentation at Scale. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 6484–6495. 
+
 ## Publications
 
 Estes, L.D., Wussah, A.O. & Asipinu, M.D. (2022a) [Final report - Phase
@@ -120,8 +158,7 @@ scales](https://www.frontiersin.org/journals/artificial-intelligence/articles/10
 
 Song, L., Estes, A.B. & Estes, L.D. (2023) [A super-ensemble approach to
 map land cover types with high resolution over data-sparse African
-savanna
-landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405).
+savanna landscapes](https://www.sciencedirect.com/science/article/pii/S1569843222003405).
 *International Journal of Applied Earth Observation and Geoinformation*,
 116, 103152.
 
@@ -129,3 +166,5 @@ Wussah, A.O., Asipinu, M.D. & Estes, L.D. (2022) [Final report - Phase
 2: creating next generation field boundary and crop type maps: Rigorous
 multi-scale groundtruth provides sustainable extension services for
 smallholders](https://cropanalytics.net/wp-content/uploads/2022/11/Farmerline-Clark-Round-2-Report-V2-Nov-8-2022.pdf)
+
+Xiong, S., Li, W., Hadunka, P., Ross, G.D., Chakraborty, T., Khallaghi, S., Abedi, R., Daum, K., Xue, K., Yao, Y.-T., Chilenga, A., Rufin, P., Khan, A., Potapov, P., Baylis, K., Caylor, K. & Estes, L. (2026). High-resolution remote sensing reveals medium-scale farms at the frontiers of agricultural change in Africa. agriRxiv, 2026, 20260367814. 
