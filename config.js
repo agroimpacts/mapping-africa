@@ -26,7 +26,13 @@ window.MA_CONFIG = {
       '2024': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/zambia_2024_v4.pmtiles'
     },
     Ghana: {
-      '2018': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v4.pmtiles'
+      '2018': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2018_v4.pmtiles',
+      '2019': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2019_v4.pmtiles',
+      '2020': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2020_v4.pmtiles',
+      '2022': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2022_v4.pmtiles',
+      '2023': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2023_v4.pmtiles',
+      '2024': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/ghana_2024_v4.pmtiles'
+       
     },
     Nigeria: {
        '2018': 'https://mappingafrica.s3.us-west-2.amazonaws.com/croplands/pmtiles/nigeria_2018_v4.pmtiles',
