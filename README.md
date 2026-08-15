@@ -116,7 +116,7 @@ Users should also be aware of these maps’ limitations, which are released “a
 - Under-segmentation, where adjacent fields are grouped together, particularly in dense agricultural landscapes; 
 - Inconsistent mapping of fields between years (fields missed, falsely predicted, or under- or over-segmented for the same location in different years). 
 
-These errors can vary by region. Map users should undertake their own accuracy assessments that are relevant to their area and application of interest. To better understand the nature of such errors, how they can be detected, and in some cases, corrected, please refer to [Xiong et al (2026)](https://www.cabidigitallibrary.org/doi/10.31220/agriRxiv.2026.00464). The methods include details on how to use polygon shape metrics, which are provided with our geoparquets, to detect fields that are under-segmented and bias-correct their areas.   
+These errors can vary by region. _**Map users should undertake their own accuracy assessments that are relevant to their area and application of interest**_. To better understand the nature of such errors, how they can be detected, and in some cases, corrected, please refer to [Xiong et al (2026)](https://www.cabidigitallibrary.org/doi/10.31220/agriRxiv.2026.00464). The methods include details on how to use polygon shape metrics, which are provided with our geoparquets, to detect fields that are under-segmented and bias-correct their areas.   
 
 ## Citation  
 
