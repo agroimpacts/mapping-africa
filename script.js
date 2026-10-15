@@ -570,23 +570,25 @@ async function buildUI() {
 //     defaultsApplied = true;
 //   }
 // }
+
+  /*=== Defaults / URL initialization ===*/
+  if (!defaultsApplied) {
   
-/*=== Defaults / URL initialization ===*/
-if (!defaultsApplied) {
-
-    const countryCb = document.getElementById(
-        `country-${validCountry}`
-    );
-
-    if (countryCb) {
-        countryCb.checked = true;
-        countryCb.dispatchEvent(
-            new Event('change', { bubbles: true })
-        );
-    }
-
-    defaultsApplied = true;
+      const countryCb = document.getElementById(
+          `country-${validCountry}`
+      );
+  
+      if (countryCb) {
+          countryCb.checked = true;
+          countryCb.dispatchEvent(
+              new Event('change', { bubbles: true })
+          );
+      }
+  
+      defaultsApplied = true;
+  }
 }
+
 
 /* ===== Boot ===== */
 window.addEventListener('DOMContentLoaded', () => {
