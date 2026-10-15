@@ -38,10 +38,42 @@ const landcoverSources = window.MA_CONFIG?.landcoverSources;
 const DEFAULT_COUNTRY = window.MA_CONFIG?.defaultCountry; 
 const DEFAULT_YEAR = window.MA_CONFIG?.defaultYear; 
 
+/* ===== URL deep linking ===== */
+const urlParams = new URLSearchParams(window.location.search);
+
+const requestedCountry = urlParams.get('country');
+const requestedYear = urlParams.get('year');
+
+const validCountry = requestedCountry &&
+    countryViews[requestedCountry]
+        ? requestedCountry
+        : DEFAULT_COUNTRY;
+
+const validYear = requestedYear &&
+    pmTilesSources?.[validCountry]?.[requestedYear]
+        ? requestedYear
+        : null;
+
+function getUrlNumber(name, fallback, min, max) {
+    const raw = urlParams.get(name);
+    if (raw === null || raw.trim() === '') return fallback;
+
+    const value = Number(raw);
+    return Number.isFinite(value) && value >= min && value <= max
+        ? value
+        : fallback;
+}
+
+const initialCenter = [
+    getUrlNumber('lon', 27.8, -180, 180),
+    getUrlNumber('lat', -13.1, -90, 90)
+];
+
+const initialZoom = getUrlNumber('zoom', 5.5, 0, 22);
+
 /* Maptiler base map */
 const maptiler_apiKey= window.MAPTILER_APIKEY;
 const maptiler = `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptiler_apiKey}`;
-
 
 /* ===== UI State ===== */
 let activeCountry = null;          // current selected country for Year panel
@@ -307,6 +339,53 @@ async function buildUI() {
   toolbar.appendChild(yearBtn);
   toolbar.appendChild(layerBtn);
 
+  /* ===== Copy Map Link button ===== */
+  const shareBtn = document.createElement('button');
+  shareBtn.className = 'toolbar-btn';
+  shareBtn.textContent = 'Copy Map Link';
+  
+  shareBtn.addEventListener('click', async () => {
+  
+      const center = map.getCenter();
+      const zoom = map.getZoom();
+  
+      const url = new URL(window.location.href);
+  
+      url.searchParams.set('lat', center.lat.toFixed(6));
+      url.searchParams.set('lon', center.lng.toFixed(6));
+      url.searchParams.set('zoom', zoom.toFixed(2));
+  
+      if (activeCountry) {
+          url.searchParams.set('country', activeCountry);
+  
+          // Find which years are currently loaded
+          const selectedYears = Object.keys(
+              pmTilesSources[activeCountry] || {}
+          ).filter(year => yearLayerExists(activeCountry, year));
+  
+          if (selectedYears.length === 1) {
+              url.searchParams.set('year', selectedYears[0]);
+          } else {
+              url.searchParams.delete('year');
+          }
+      }
+  
+      try {
+          await navigator.clipboard.writeText(url.toString());
+  
+          shareBtn.textContent = 'Copied!';
+          setTimeout(() => {
+              shareBtn.textContent = 'Copy Map Link';
+          }, 2000);
+  
+      } catch (err) {
+          console.error('Could not copy map link:', err);
+          window.prompt('Copy this map URL:', url.toString());
+      }
+  });
+
+  toolbar.appendChild(shareBtn);
+
   // Mount panels
   document.body.appendChild(countryPanel);
   document.body.appendChild(yearPanel);
@@ -320,7 +399,8 @@ async function buildUI() {
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.id = `country-${country}`;
-    input.checked = (country === DEFAULT_COUNTRY); 
+    // input.checked = (country === DEFAULT_COUNTRY); 
+    input.checked = (country === validCountry);
 
     const label = document.createElement('label');
     label.setAttribute('for', input.id);
@@ -358,8 +438,12 @@ async function buildUI() {
         // auto-select the latest year for this country
         const years = listYearsForCountry(country);
         if (years.length > 0) {
-          const latestYear = years[years.length - 1]; // years are sorted, last is latest
-          const yrCheckbox = document.getElementById(`year-${country}-${latestYear}`);
+          // const latestYear = years[years.length - 1]; // years are sorted, last is latest
+          const latestYear =
+            country === validCountry && validYear
+                ? validYear
+                : years[years.length - 1];
+                  const yrCheckbox = document.getElementById(`year-${country}-${latestYear}`);
           if (yrCheckbox && !yrCheckbox.checked) {
             yrCheckbox.checked = true;
             yrCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
@@ -474,17 +558,34 @@ async function buildUI() {
   lcRow.appendChild(lcLbl);
   layerPanel.appendChild(lcRow);
   
-  /*=== Defaults ===*/
-  if (!defaultsApplied) {
-    // Trigger default country checkbox change to initialize everything
-    const zcb = document.getElementById(`country-${DEFAULT_COUNTRY}`);
-    if (zcb) {
-      zcb.checked = true;
-      zcb.dispatchEvent(new Event('change', { bubbles: true }));
-    }
+//   /*=== Defaults ===*/
+//   if (!defaultsApplied) {
+//     // Trigger default country checkbox change to initialize everything
+//     const zcb = document.getElementById(`country-${DEFAULT_COUNTRY}`);
+//     if (zcb) {
+//       zcb.checked = true;
+//       zcb.dispatchEvent(new Event('change', { bubbles: true }));
+//     }
     
+//     defaultsApplied = true;
+//   }
+// }
+  
+/*=== Defaults / URL initialization ===*/
+if (!defaultsApplied) {
+
+    const countryCb = document.getElementById(
+        `country-${validCountry}`
+    );
+
+    if (countryCb) {
+        countryCb.checked = true;
+        countryCb.dispatchEvent(
+            new Event('change', { bubbles: true })
+        );
+    }
+
     defaultsApplied = true;
-  }
 }
 
 /* ===== Boot ===== */
@@ -508,8 +609,10 @@ window.addEventListener('DOMContentLoaded', () => {
       },
       layers: [{ id: 'basemap', type: 'raster', source: 'basemap' }]
     },
-    center: [27.8,  -13.1], // Zambia 
-    zoom: 5.5
+    // center: [27.8,  -13.1], // Zambia 
+    // zoom: 5.5
+    center: initialCenter,
+    zoom: initialZoom
   });
 
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-left');
