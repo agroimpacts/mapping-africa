@@ -604,15 +604,13 @@ window.addEventListener('DOMContentLoaded', () => {
         basemap: {
           type: 'raster',
           tiles: [maptiler],
-          tileSize: 256,
+          tileSize: 512,      
           attribution: '© MapTiler © OpenStreetMap contributors',
-          maxzoom: 20
+          maxzoom: 16.5
         }
       },
       layers: [{ id: 'basemap', type: 'raster', source: 'basemap' }]
     },
-    // center: [27.8,  -13.1], // Zambia 
-    // zoom: 5.5
     center: initialCenter,
     zoom: initialZoom
   });
