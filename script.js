@@ -339,6 +339,11 @@ async function buildUI() {
   toolbar.appendChild(yearBtn);
   toolbar.appendChild(layerBtn);
 
+  // Mount panels
+  document.body.appendChild(countryPanel);
+  document.body.appendChild(yearPanel);
+  document.body.appendChild(layerPanel);
+
   /* ---- Country Panel ---- */
   Object.keys(window.MA_CONFIG.countryViews).forEach(country => {
     const row = document.createElement('div');
@@ -506,18 +511,6 @@ async function buildUI() {
   lcRow.appendChild(lcLbl);
   layerPanel.appendChild(lcRow);
   
-//   /*=== Defaults ===*/
-//   if (!defaultsApplied) {
-//     // Trigger default country checkbox change to initialize everything
-//     const zcb = document.getElementById(`country-${DEFAULT_COUNTRY}`);
-//     if (zcb) {
-//       zcb.checked = true;
-//       zcb.dispatchEvent(new Event('change', { bubbles: true }));
-//     }
-    
-//     defaultsApplied = true;
-//   }
-// }
 
   /*=== Defaults / URL initialization ===*/
   if (!defaultsApplied) {
