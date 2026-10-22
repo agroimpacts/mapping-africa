@@ -339,58 +339,6 @@ async function buildUI() {
   toolbar.appendChild(yearBtn);
   toolbar.appendChild(layerBtn);
 
-  /* ===== Copy Map Link button ===== */
-  const shareBtn = document.createElement('button');
-  shareBtn.className = 'toolbar-btn';
-  shareBtn.textContent = 'Copy Map Link';
-  
-  shareBtn.addEventListener('click', async () => {
-  
-      const center = map.getCenter();
-      const zoom = map.getZoom();
-  
-      const url = new URL(window.location.href);
-  
-      url.searchParams.set('lat', center.lat.toFixed(6));
-      url.searchParams.set('lon', center.lng.toFixed(6));
-      url.searchParams.set('zoom', zoom.toFixed(2));
-  
-      if (activeCountry) {
-          url.searchParams.set('country', activeCountry);
-  
-          // Find which years are currently loaded
-          const selectedYears = Object.keys(
-              pmTilesSources[activeCountry] || {}
-          ).filter(year => yearLayerExists(activeCountry, year));
-  
-          if (selectedYears.length === 1) {
-              url.searchParams.set('year', selectedYears[0]);
-          } else {
-              url.searchParams.delete('year');
-          }
-      }
-  
-      try {
-          await navigator.clipboard.writeText(url.toString());
-  
-          shareBtn.textContent = 'Copied!';
-          setTimeout(() => {
-              shareBtn.textContent = 'Copy Map Link';
-          }, 2000);
-  
-      } catch (err) {
-          console.error('Could not copy map link:', err);
-          window.prompt('Copy this map URL:', url.toString());
-      }
-  });
-
-  toolbar.appendChild(shareBtn);
-
-  // Mount panels
-  document.body.appendChild(countryPanel);
-  document.body.appendChild(yearPanel);
-  document.body.appendChild(layerPanel);
-
   /* ---- Country Panel ---- */
   Object.keys(window.MA_CONFIG.countryViews).forEach(country => {
     const row = document.createElement('div');
