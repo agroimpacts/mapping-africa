@@ -75,6 +75,94 @@ const initialZoom = getUrlNumber('zoom', 5.5, 0, 22);
 const maptiler_apiKey= window.MAPTILER_APIKEY;
 const maptiler = `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptiler_apiKey}`;
 
+/* ===== Basemaps: EOX Sentinel-2 Cloudless (by year) + MapTiler from zoom 14 ===== */
+const S2_CONFIG = window.MA_CONFIG?.s2cloudless;
+const S2_YEARS = S2_CONFIG?.years ?? [];
+const MAPTILER_MIN_ZOOM = window.MA_CONFIG?.maptilerMinZoom ?? 14;
+const S2_SOURCE_ID = 'basemap-s2';
+const S2_LAYER_ID = 'basemap-s2';
+const MAPTILER_SOURCE_ID = 'basemap-maptiler';
+const MAPTILER_LAYER_ID = 'basemap-maptiler';
+
+// Ending each basemap credit with this exact string keeps the basemap credit first and MapLibre
+// last; with no basemap shown, MapLibre still appears on its own.
+const MAPLIBRE_ATTRIBUTION = '<a href="https://maplibre.org/" target="_blank">MapLibre</a>';
+
+// User's basemap choice (kept for the session)
+let s2On = true;        // Sentinel-2 checkbox
+let maptilerOn = true;  // MapTiler checkbox: on = switch to MapTiler from MAPTILER_MIN_ZOOM up
+
+const pickS2Year = (year) => (S2_YEARS.includes(year) ? year : null);
+
+// Start on the deep-linked year, else the latest year of the starting country
+const initialCountryYears = listYearsForCountry(validCountry);
+let basemapYear =
+  pickS2Year(validYear || initialCountryYears[initialCountryYears.length - 1]) ??
+  S2_YEARS[S2_YEARS.length - 1];
+
+function s2SourceSpec(year) {
+  return {
+    type: 'raster',
+    tiles: [S2_CONFIG.urlTemplate.replace('{year}', year)],
+    tileSize: 256,
+    maxzoom: S2_CONFIG.maxzoom ?? 16,
+    attribution: `${year} <a href="https://s2maps.eu" target="_blank" rel="noopener">Sentinel-2 cloudless</a> by EOX IT Services GmbH (Contains modified Copernicus Sentinel data ${year}) | ${MAPLIBRE_ATTRIBUTION}`
+  };
+}
+
+function s2LayerSpec(visible) {
+  return {
+    id: S2_LAYER_ID,
+    type: 'raster',
+    source: S2_SOURCE_ID,
+    layout: { visibility: visible ? 'visible' : 'none' }
+  };
+}
+
+const s2Label = (year) => `${year} Sentinel-2 Cloudless Basemap`;
+
+// Swap the Sentinel-2 mosaic to another year. Source is re-added (not setTiles) so the
+// footer attribution picks up the new year.
+function setBasemapYear(year) {
+  const y = pickS2Year(year);
+  if (!y || y === basemapYear) return;
+  basemapYear = y;
+
+  const visible = map.getLayoutProperty(S2_LAYER_ID, 'visibility') !== 'none';
+  if (map.getLayer(S2_LAYER_ID)) map.removeLayer(S2_LAYER_ID);
+  if (map.getSource(S2_SOURCE_ID)) map.removeSource(S2_SOURCE_ID);
+  map.addSource(S2_SOURCE_ID, s2SourceSpec(y));
+  map.addLayer(s2LayerSpec(visible), MAPTILER_LAYER_ID);  // stay below MapTiler and data layers
+
+  const lbl = document.querySelector('label[for="layer-s2"]');
+  if (lbl) lbl.textContent = s2Label(y);
+}
+
+function setLayerVisible(id, visible) {
+  const v = visible ? 'visible' : 'none';
+  if (map.getLayer(id) && map.getLayoutProperty(id, 'visibility') !== v) {
+    map.setLayoutProperty(id, 'visibility', v);
+  }
+}
+
+// Apply the basemap choice for the current zoom. Hidden layers are not requested and not
+// credited, so the footer only shows the basemap on screen.
+function syncBasemaps() {
+  const zoomedIn = map.getZoom() >= MAPTILER_MIN_ZOOM;
+  const maptilerActive = maptilerOn && zoomedIn;
+  const s2Active = s2On && !maptilerActive;
+
+  setLayerVisible(MAPTILER_LAYER_ID, maptilerActive);
+  setLayerVisible(S2_LAYER_ID, s2Active);
+
+  const s2Cb = document.getElementById('layer-s2');
+  if (s2Cb) s2Cb.checked = s2Active;
+  const mtCb = document.getElementById('layer-maptiler');
+  if (mtCb) mtCb.checked = maptilerOn;
+  const mtRow = document.getElementById('layer-maptiler-row');
+  if (mtRow) mtRow.style.display = zoomedIn ? '' : 'none';
+}
+
 /* ===== UI State ===== */
 let activeCountry = null;          // current selected country for Year panel
 let fieldBoundaryVisible = false;  // changed to false for Tanzania default
@@ -339,6 +427,30 @@ async function buildUI() {
   toolbar.appendChild(yearBtn);
   toolbar.appendChild(layerBtn);
 
+  /* ===== Current zoom readout ===== */
+  const zoomReadout = document.createElement('span');
+  zoomReadout.className = 'toolbar-btn zoom-readout';
+  const updateZoom = () => {
+    zoomReadout.textContent = `Zoom: ${map.getZoom().toFixed(2)}`;
+  };
+  map.on('zoom', updateZoom);
+  map.on('zoom', syncBasemaps);  // auto-switch to MapTiler at MAPTILER_MIN_ZOOM
+
+  // When zooming in past MAPTILER_MIN_ZOOM, swap the Year panel for the Layer panel so the
+  // basemap choice is visible. Fires only on the crossing, not on every zoom event.
+  let wasZoomedIn = map.getZoom() >= MAPTILER_MIN_ZOOM;
+  map.on('zoom', () => {
+    const zoomedIn = map.getZoom() >= MAPTILER_MIN_ZOOM;
+    if (zoomedIn && !wasZoomedIn) {
+      yearPanel.style.display = 'none';
+      countryPanel.style.display = 'none';
+      layerPanel.style.display = 'block';
+    }
+    wasZoomedIn = zoomedIn;
+  });
+  updateZoom();
+  toolbar.appendChild(zoomReadout);
+
   /* ===== Copy Map Link button ===== */
   const shareBtn = document.createElement('button');
   shareBtn.className = 'toolbar-btn';
@@ -416,11 +528,11 @@ async function buildUI() {
         const fb = document.getElementById('layer-field');
         if (fb) fb.checked = true;
 
-        // turn Landcover on
-        landcoverVisible = true;
-        toggleLandcoverForCountry(country, true);
+        // turn Landcover on only for countries that have a landcover COG (landcoverSources in config.js)
+        landcoverVisible = !!landcoverSources?.[country];
+        toggleLandcoverForCountry(country, landcoverVisible);
         const lc = document.getElementById('layer-landcover');
-        if (lc) lc.checked = true;
+        if (lc) lc.checked = landcoverVisible;
 
         // zoom to country view (center/zoom)
         flyToCountry(country);
@@ -451,7 +563,9 @@ async function buildUI() {
         }
       } else {
         removeCountryAll(country);
-        if (activeCountry === country) activeCountry = null;
+        if (activeCountry === country) {
+          activeCountry = null;
+        }
       }
       // respect Field Boundary visibility
       setFieldBoundaryVisibility(fieldBoundaryVisible);
@@ -502,9 +616,14 @@ async function buildUI() {
 
       input.addEventListener('change', async (e) => {
         if (e.target.checked) {
+          setBasemapYear(yr);  // most recently checked year drives the basemap
           await addYearLayer(activeCountry, yr);
         } else {
           removeYearLayer(activeCountry, yr);
+          // fall back to the latest year still checked (keep current year if none)
+          const remaining = listYearsForCountry(activeCountry)
+            .filter(y => yearLayerExists(activeCountry, y));
+          if (remaining.length) setBasemapYear(remaining[remaining.length - 1]);
         }
         setFieldBoundaryVisibility(fieldBoundaryVisible);
         if (landcoverVisible) toggleLandcoverForCountry(activeCountry, true);
@@ -546,7 +665,7 @@ async function buildUI() {
   const lcCb = document.createElement('input');
   lcCb.type = 'checkbox';
   lcCb.id = 'layer-landcover';
-  lcCb.checked = true; // Changed to true for Tanzania
+  lcCb.checked = false; // set per country when a country is chosen (only countries with landcover)
   const lcLbl = document.createElement('label');
   lcLbl.setAttribute('for', 'layer-landcover');
   lcLbl.textContent = 'Landcover';
@@ -557,6 +676,45 @@ async function buildUI() {
   lcRow.appendChild(lcCb);
   lcRow.appendChild(lcLbl);
   layerPanel.appendChild(lcRow);
+
+  // Sentinel-2 Cloudless basemap (label shows the year in use)
+  const s2Row = document.createElement('div');
+  s2Row.className = 'panel-row';
+  const s2Cb = document.createElement('input');
+  s2Cb.type = 'checkbox';
+  s2Cb.id = 'layer-s2';
+  const s2Lbl = document.createElement('label');
+  s2Lbl.setAttribute('for', 'layer-s2');
+  s2Lbl.textContent = s2Label(basemapYear);
+  s2Cb.addEventListener('change', (e) => {
+    s2On = e.target.checked;
+    // choosing Sentinel-2 at zoom 14+ overrides MapTiler; below 14 it leaves the auto-switch alone
+    if (s2On && map.getZoom() >= MAPTILER_MIN_ZOOM) maptilerOn = false;
+    syncBasemaps();
+  });
+  s2Row.appendChild(s2Cb);
+  s2Row.appendChild(s2Lbl);
+  layerPanel.appendChild(s2Row);
+
+  // MapTiler basemap (row only shown from MAPTILER_MIN_ZOOM up)
+  const mtRow = document.createElement('div');
+  mtRow.className = 'panel-row';
+  mtRow.id = 'layer-maptiler-row';
+  const mtCb = document.createElement('input');
+  mtCb.type = 'checkbox';
+  mtCb.id = 'layer-maptiler';
+  const mtLbl = document.createElement('label');
+  mtLbl.setAttribute('for', 'layer-maptiler');
+  mtLbl.textContent = 'MapTiler Basemap';
+  mtCb.addEventListener('change', (e) => {
+    maptilerOn = e.target.checked;
+    syncBasemaps();
+  });
+  mtRow.appendChild(mtCb);
+  mtRow.appendChild(mtLbl);
+  layerPanel.appendChild(mtRow);
+
+  syncBasemaps();  // set checkbox states and row visibility for the starting zoom
   
 
   /*=== Defaults / URL initialization ===*/
@@ -584,23 +742,39 @@ window.addEventListener('DOMContentLoaded', () => {
   protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', protocol.tile);
 
+  // Start on the basemap that suits the initial zoom, so no tiles are loaded only to be hidden
+  const startOnMaptiler = maptilerOn && initialZoom >= MAPTILER_MIN_ZOOM;
+  const startOnS2 = s2On && !startOnMaptiler;
+
   map = new maplibregl.Map({
     container: 'map',
     style: {
       version: 8,
       sources: {
-        basemap: {
+        [S2_SOURCE_ID]: s2SourceSpec(basemapYear),
+        [MAPTILER_SOURCE_ID]: {
           type: 'raster',
           tiles: [maptiler],
-          tileSize: 512,      
-          attribution: '© MapTiler © OpenStreetMap contributors',
-          maxzoom: 16.5
+          tileSize: 512,
+          attribution: `© MapTiler © OpenStreetMap contributors | ${MAPLIBRE_ATTRIBUTION}`,
+          minzoom: MAPTILER_MIN_ZOOM,
+          maxzoom: 16
         }
       },
-      layers: [{ id: 'basemap', type: 'raster', source: 'basemap' }]
+      layers: [
+        s2LayerSpec(startOnS2),
+        {
+          id: MAPTILER_LAYER_ID,
+          type: 'raster',
+          source: MAPTILER_SOURCE_ID,
+          minzoom: MAPTILER_MIN_ZOOM,
+          layout: { visibility: startOnMaptiler ? 'visible' : 'none' }
+        }
+      ]
     },
     center: initialCenter,
-    zoom: initialZoom
+    zoom: initialZoom,
+    attributionControl: { compact: true, customAttribution: MAPLIBRE_ATTRIBUTION }
   });
 
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-left');

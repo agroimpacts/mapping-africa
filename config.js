@@ -53,6 +53,16 @@ window.MA_CONFIG = {
     }
   },
 
+  // EOX Sentinel-2 Cloudless basemap: one mosaic per year, year follows the Year panel
+  s2cloudless: {
+    years: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
+    urlTemplate: 'https://tiles.maps.eox.at/wmts?layer=s2cloudless-{year}_3857&style=default&tilematrixset=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix={z}&TileCol={x}&TileRow={y}',
+    maxzoom: 16
+  },
+
+  // MapTiler takes over as the basemap from this zoom level up
+  maptilerMinZoom: 14,
+
   landcoverSources: {
     Tanzania: {
       '2019': "https://mappingafrica.s3.us-west-2.amazonaws.com/landcover/tanzania_2019_cog.tif"
